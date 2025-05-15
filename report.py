@@ -248,7 +248,7 @@ if file_st is not None:
         
 
     # Creation graphic combiner (bar and line)
-
+    """
     fig_cmb = go.Figure()
 
     #-- Barre pour l'achievment ---
@@ -271,8 +271,10 @@ if file_st is not None:
         textposition= "top center",
         line = dict(color = "orange", width = 3)
     ))
+    """
 
     # Mettre a jour la mise en page
+    """
     fig_cmb.update_layout(
         title = "Target and Achievment for 2025", 
         yaxis = dict(title= "Purchase (Pcs)"),
@@ -283,6 +285,7 @@ if file_st is not None:
     )
 
     st.plotly_chart(fig_cmb)
+    """
 
 
 ######################################
