@@ -198,6 +198,55 @@ if file_st is not None:
     target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
     target_2025["Target"] = [16000, 16000, 16000, 17000] # Creation d'une colonne target
 
+
+    def creer_target_si_un_mois(target_2025):
+        if target_2025["Months"].nunique() == 1:
+            target_2025["Target"] = 16000
+            return target_2025["Target"]
+        
+        elif target_2025["Months"].nunique() == 2:
+            target_2025["Target"] = [16000, 16000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 3:  
+            target_2025["Target"] = [16000, 16000, 16000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 4:
+            target_2025["Target"] = [16000, 16000, 16000, 17000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 5:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 6:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 7:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 8:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 9:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 10:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 11:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 12:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000, 20000]
+            return target_2025["Target"]
+        else:
+            return None  # ou gérer autrement si plusieurs mois
+        
+    target = creer_target_si_un_mois(target_2025)
+    #target_2025["Target"] = target
+
+    st.write(target)
+    
+        
+
     # Creation graphic combiner (bar and line)
 
     fig_cmb = go.Figure()
