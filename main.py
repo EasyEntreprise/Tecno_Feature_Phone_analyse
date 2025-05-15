@@ -3,15 +3,28 @@ Dans ce fichier, nous avons crée le dashboard qui nous permettra d'analyser
 les données recueilli dans notre fichier des donnés sur les achats de Tecno FP.
 """
 # Librairies
-import pandas as pd
+
 import streamlit as st
+
+# Config page
+st.set_page_config(
+    page_title="DashBoard", 
+    layout="wide", 
+    page_icon=":material/bar_chart:"
+)
+
+import pandas as pd
 import plotly.express as px
 import altair as alt
 from streamlit_extras.dataframe_explorer import dataframe_explorer
 from streamlit_extras.metric_cards import style_metric_cards
 
 # Config page
-st.set_page_config(page_title="DashBoard", layout="wide", page_icon=":material/bar_chart:")
+st.set_page_config(
+    page_title="DashBoard", 
+    layout="wide", 
+    page_icon=":material/bar_chart:"
+)
 
 # Page Setup
 
