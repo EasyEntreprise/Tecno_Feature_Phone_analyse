@@ -45,7 +45,8 @@ if file is not None:
     ##################
     # Filtre dates
     ###
-    date_frame = dataset[(dataset["Date"]>=str(start_date)) & (dataset["Date"]<=str(en_date))]
+    #date_frame = dataset[(dataset["Date"]>=str(start_date)) & (dataset["Date"]<=str(en_date))]
+    date_frame = dataset[(dataset["Date"]>= start_date) & (dataset["Date"]<= en_date)]
 
     with st.expander("Filter dates"):
         filter_date = dataframe_explorer(date_frame, case=False)
