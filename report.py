@@ -196,7 +196,6 @@ if file_st is not None:
 
     view_2025 = date_frame_st[date_frame_st["Years"] == 2025]
     target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
-    target_2025["Target"] = [16000, 16000, 16000, 17000] # Creation d'une colonne target
 
 
     def creer_target_si_un_mois(target_2025):
@@ -208,7 +207,7 @@ if file_st is not None:
             target_2025["Target"] = [16000, 16000]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 3:  
-            target_2025["Target"] = [16000, 16000, 16000]
+            target_2025["Target"] = [16000, 16000, 16000] # Creation d'une colonne target
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 4:
             target_2025["Target"] = [16000, 16000, 16000, 17000]
