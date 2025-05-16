@@ -2,5 +2,5 @@ pandas
 numpy
 streamlit
 plotly
-streamlit-extras
+streamlit_extras
 openpyxl
