@@ -197,7 +197,6 @@ if file_st is not None:
     view_2025 = date_frame_st[date_frame_st["Years"] == 2025]
     target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
 
-
     def creer_target_si_un_mois(target_2025):
         if target_2025["Months"].nunique() == 1:
             target_2025["Target"] = 16000
@@ -240,14 +239,11 @@ if file_st is not None:
             return None  # ou gérer autrement si plusieurs mois
         
     target = creer_target_si_un_mois(target_2025)
-    #target_2025["Target"] = target
 
-    st.write(target)
-    
-        
+    #st.write(target)
 
     # Creation graphic combiner (bar and line)
-    """
+    #"""
     fig_cmb = go.Figure()
 
     #-- Barre pour l'achievment ---
@@ -263,17 +259,17 @@ if file_st is not None:
     #-- Ligne pour le target --
     fig_cmb.add_trace(go.Scatter(
         x = target_2025["Months"],
-        y = target_2025["Target"],
+        y = target,
         name ="Target (Pcs)",
         mode = 'lines+text+markers',
         text = target_2025["Target"],
         textposition= "top center",
         line = dict(color = "orange", width = 3)
     ))
-    """
+    #"""
 
     # Mettre a jour la mise en page
-    """
+    #"""
     fig_cmb.update_layout(
         title = "Target and Achievment for 2025", 
         yaxis = dict(title= "Purchase (Pcs)"),
@@ -284,7 +280,7 @@ if file_st is not None:
     )
 
     st.plotly_chart(fig_cmb)
-    """
+    #"""
 
 
 ######################################
