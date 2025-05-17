@@ -20,9 +20,9 @@ st.markdown("___")
 # Load dataset
 ###
 
-######################################
-### Partie 1 : ST REPORT
-##############
+######################################################################################################################################
+################################################### Partie 1 : ST REPORT #############################################################
+######################################################################################################################################
 file_st = st.file_uploader("Inserer votre fichier Excel ou CSV du 'ST FP Tecno' en appuyant sur le bouton 'Browse files'", type=["xlsx", "csv"])
 
 if file_st is not None:
@@ -32,7 +32,7 @@ if file_st is not None:
     # Traitement des valeurs null
    
     #dataset_st = dataset_full_st.dropna() # Supprimer les valeurs null
-    dataset_st = dataset_full_st.fillna(0) # Mettre les valeurs null à '0'
+    dataset_st = dataset_full_st.dropna(subset="Purchased Qty") # Mettre les valeurs null à '0'
 
     # Creation des dates
     col1, col2 = st.columns(2)
@@ -283,9 +283,9 @@ if file_st is not None:
     #"""
 
 
-######################################
-### Partie 2 : SD REPORT
-##############
+##########################################################################################################################################################
+########################################################### Partie 2 : SD REPORT  ########################################################################
+##########################################################################################################################################################
 file_sd = st.file_uploader("Inserer votre fichier Excel ou CSV du 'SD FP Tecno' en appuyant sur le bouton 'Browse files'", type=["xlsx", "csv"])
 
 if file_sd is not None:
@@ -294,7 +294,7 @@ if file_sd is not None:
 
     # Traitement des valeurs null
    
-    dataset_sd = dataset_full_sd.dropna(how='all') # Supprimer les valeurs null
+    dataset_sd = dataset_full_sd.dropna(subset="Purchases Qty (Pcs)") # Supprimer les valeurs null
 
     # Creation des dates
     col11, col12 = st.columns(2)
