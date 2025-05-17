@@ -26,7 +26,7 @@ if file is not None:
 
     # Traitement des valeurs null
     #dataset = dataset_full.fillna(0) # Mettre les valeurs null à '0'
-    dataset = dataset_full.dropna(how='all') # Supprimer les valeurs null
+    dataset = dataset_full.dropna(subset='Purchased Qty') # Supprimer les valeurs null
 
     # Creation des dates
     col1, col2 = st.columns(2)
