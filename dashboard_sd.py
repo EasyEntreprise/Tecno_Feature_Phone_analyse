@@ -25,7 +25,7 @@ if file is not None:
     dataset_full = pd.read_excel(file)
 
     # Traitement des valeurs null
-    dataset = dataset_full.fillna(0) # Mettre les valeurs null à '0'
+    dataset = dataset_full.dropna(subset="Purchases Qty (Pcs)") # Mettre les valeurs null à '0'
     #dataset = dataset_full.dropna(how='all') # Supprimer les valeurs null
 
     # Creation des dates
@@ -195,6 +195,99 @@ if file is not None:
  
     #fig_area = px.bar(df_filtered, x="City", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Models purchase by area", color="Products", barmode="group")
     #st.plotly_chart(fig_area)
+
+
+    ########################
+    # Target clients & Realisation 
+    ########
+    st.subheader("Target & Achievment", divider="grey")
+
+    view_2025 = dataset_full[dataset_full["Years"] == 2025]
+    target_2025 = view_2025.groupby("Date", as_index= False)["Purchases Qty (Pcs)"].sum()
+
+    def creer_target_si_un_mois(target_2025):
+        if target_2025["Date"].nunique() == 1:
+            target_2025["Target"] = 9600
+            return target_2025["Target"]
+        
+        elif target_2025["Date"].nunique() == 2:
+            target_2025["Target"] = [9600, 9600]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 3:  
+            target_2025["Target"] = [9600, 9600, 9600] # Creation d'une colonne target
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 4:
+            target_2025["Target"] = [9600, 9600, 9600, 10200]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 5:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 6:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 7:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 8:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 9:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 10:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 11:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000, 12000]
+            return target_2025["Target"]
+        elif target_2025["Date"].nunique() == 12:
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000, 12000, 12000]
+            return target_2025["Target"]
+        else:
+            return None  # ou gérer autrement si plusieurs mois
+        
+    target = creer_target_si_un_mois(target_2025)
+
+    #st.write(target)
+
+    # Creation graphic combiner (bar and line)
+    #"""
+    fig_cmb = go.Figure()
+
+    #-- Barre pour l'achievment ---
+    fig_cmb.add_trace(go.Bar(
+        x = target_2025["Date"],
+        y = target_2025["Purchases Qty (Pcs)"],
+        name = "Achievment",
+        text = target_2025["Purchases Qty (Pcs)"],
+        textposition= "auto", # il y a 'auto' 'outside' 'inside'
+        marker_color = "skyblue"
+    ))
+
+    #-- Ligne pour le target --
+    fig_cmb.add_trace(go.Scatter(
+        x = target_2025["Date"],
+        y = target,
+        name ="Target (Pcs)",
+        mode = 'lines+text+markers',
+        text = target_2025["Target"],
+        textposition= "top center",
+        line = dict(color = "orange", width = 3)
+    ))
+    #"""
+
+    # Mettre a jour la mise en page
+    #"""
+    fig_cmb.update_layout(
+        title = "Sub-dealers > Target and Achievment for 2025", 
+        yaxis = dict(title= "Purchases Qty (Pcs)"),
+        yaxis2 = dict(title= "Buy", overlaying = 'y', side = 'right'), 
+        xaxis = dict(title = "Month"),
+        legend = dict(x=0.1, y=1.1, orientation = 'h'), 
+        bargap = 0.3
+    )
+
+    st.plotly_chart(fig_cmb)
     
 
     ########################
@@ -249,7 +342,7 @@ if file is not None:
 
     # Graphic achat mensuel du client selectionner par models
         
-    fig_sd_models = px.bar(achat_models_sd, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchases models of  Sub-dealers {select_sd} by months", color="Products")
+    fig_sd_models = px.bar(achat_models_sd, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchases of  Sub-dealers {select_sd} by models", color="Products")
     fig_sd_models.update_traces(textposition = 'outside')
     st.plotly_chart(fig_sd_models)
 
