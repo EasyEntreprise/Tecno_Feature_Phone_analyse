@@ -48,35 +48,47 @@ if file is not None:
     with st.expander("Filter dates"):
         filter_date = dataframe_explorer(date_frame, case=False)
         st.dataframe(filter_date, use_container_width= True)
-
+    
+    
+    #####################################
     # Creation columns of metric
+    ####
     st.subheader("Data Metric", divider="rainbow")
     
     col1, col2, col3, col4, col5, col6 = st.columns(6)
+    #----------------------------------------------------
+    price_high = date_frame.loc[date_frame["Prices ($)"].idxmax()]
+    converter_high_price = str(price_high["Products"])
+    #-----
+    price_low = date_frame.loc[date_frame["Prices ($)"].idxmin()]
+    converter_low_price = str(price_low["Products"])
+    #----------------------------------------------------
 
     db = date_frame.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
 
     col1.metric(label="Sum Purchase(Pcs)", value= date_frame["Purchased Qty"].sum(), delta="General Purchase(Pcs)")
     col2.metric(label="General Average(Pcs)", value= date_frame["Purchased Qty"].mean(), delta="General Average(Pcs)")
-    col3.metric(label="High Price($)", value= date_frame["Prices ($)"].max(), delta="High Price($)")
-    col4.metric(label="Low Price($)", value= date_frame["Prices ($)"].min(), delta="Low Price($)")
+    col3.metric(label="High Price($)", value= date_frame["Prices ($)"].max(), delta = converter_high_price)
+    col4.metric(label="Low Price($)", value= date_frame["Prices ($)"].min(), delta = converter_low_price)
 
     dbmax = db.loc[db["Purchased Qty"].idxmax()] # Recuperation de la semaine avec le plus grand achat
     dbmin = db.loc[db["Purchased Qty"].idxmin()] # Recuperation de la semaine avec le plus faible achat
 
-    col5.metric(label="High buy' week (Pcs)", value=db["Purchased Qty"].max(), delta= dbmax["Weeks"]) # Afficher le metric de la semaine avec plus d'achats
-    col6.metric(label="Weak buy' week (Pcs)", value=db["Purchased Qty"].min(), delta= dbmin["Weeks"]) # Afficher le metric de la semaine avec moins d'achats
+    col5.metric(label="Best week (Pcs)", value=db["Purchased Qty"].max(), delta= dbmax["Weeks"]) # Afficher le metric de la semaine avec plus d'achats
+    col6.metric(label="Bad week (Pcs)", value=db["Purchased Qty"].min(), delta= dbmin["Weeks"]) # Afficher le metric de la semaine avec moins d'achats
 
 
     a1, a2 = st.columns(2)
 
     with a1 :
         st.subheader("Graphic Keys models", divider="blue")
-        models = ["T101", "T353", "T528", "T528 New"]
-        key_model = date_frame[date_frame["Products"].isin(models)]
-        key_model = key_model.groupby(["Products","Prices ($)"], as_index= False)["Purchased Qty"].sum()
+        models = date_frame["Products"].unique()    #["T101", "T353", "T528", "T528 New"]
+        
+        selecte_models = st.multiselect("Selecte your models here", models, default=["T101", "T353", "T528 New"])
+        key_model = date_frame.groupby(["Products","Prices ($)"], as_index= False)["Purchased Qty"].sum()
+        models_filter = key_model[key_model["Products"].isin(selecte_models)]
 
-        fig_key = px.bar(key_model, x="Products", y="Prices ($)", text="Prices ($)", title="Graphic Models and Prices", color="Products")
+        fig_key = px.bar(models_filter, x="Products", y="Prices ($)", text="Prices ($)", title="Graphic Models and Prices", color="Products")
         st.plotly_chart(fig_key)
 
         #st.markdown("___")
@@ -84,9 +96,8 @@ if file is not None:
         fig_pie = go.Figure(data=[go.Pie(labels= area_data["City"], values= area_data["Purchased Qty"], title="Proportion des données par City", opacity= 0.5)])
         fig_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_pie)
-        
 
-
+    #####   
     # Metric keys models
     with a2 :
         st.subheader("Keys Modeles", divider="rainbow")
@@ -113,7 +124,6 @@ if file is not None:
         col12.metric(label="Lushi Purchase(Pcs)", value= dataset_Lushi["Purchased Qty"].sum(), delta= dataset_Lushi["Purchased Qty"].mean())
 
         # Style the metric
-        #style_metric_cards(background_color="#3c4d66", border_left_color="#e6200e", border_color="#0006a")
         style_metric_cards(background_color="#636363", border_left_color="#a8ff78", border_color="#9FC1FF")
 
         #
@@ -131,7 +141,7 @@ if file is not None:
         models_data = date_frame["Products"].unique()
 
         # Creation d'une selecteur multiple
-        selected_models = st.multiselect("Selecte your models", models_data, default=["T101", "T353", "T528"])
+        selected_models = st.multiselect("Selecte your models", models_data, default=["T101", "T353", "T528 New"])
 
         # Filtrage des donnees en fonction de la selection
         date_groupby = date_frame.groupby(["City","Products"], as_index= False)["Purchased Qty"].sum()
@@ -147,11 +157,11 @@ if file is not None:
 
         # Create a histogram
         fig_hist = px.histogram(date_groupby, x="Prices ($)", title="Distribution models on prices", hover_data=["Purchased Qty"])
-        #fig_hist = px.histogram(date_groupby, x="Prices ($)", title="Distribution models on prices", color="Products", marginal="box", hover_data=["Purchased Qty"])
         st.plotly_chart(fig_hist)
 
-
+    #####################
     # Situation Models
+    ####
     
     st.subheader("Situation by Models", divider="rainbow")
     date_groupbyx = date_frame.groupby(["Products", "Prices ($)"], as_index= False)["Purchased Qty"].sum()
@@ -160,7 +170,9 @@ if file is not None:
     fig_product.update_traces(textposition = 'outside')
     st.plotly_chart(fig_product)
 
+    ##################################
     # Situation Models by years
+    #####
 
     st.subheader("Situation Models by years", divider="rainbow")
     with st.expander("Filter years"):
@@ -172,7 +184,9 @@ if file is not None:
     fig_y.update_traces(textposition = 'outside')
     st.plotly_chart(fig_y)
 
+    #########################
     # Situation by Months
+    #####
 
     st.subheader("Situation by Months", divider="rainbow")
     with st.expander("Filter years"):
@@ -183,12 +197,125 @@ if file is not None:
     fig_month =  px.line(filter_years, x="Months", y="Purchased Qty", text="Purchased Qty")
     fig_month.update_traces(textposition = 'top center')
     st.plotly_chart(fig_month)
-
+    
+    
+    ###########################
     # Situation by weeks
+    ####
+
     st.subheader("Situation purchase by weeks", divider="rainbow")
+
+    col7, col8 = st.columns(2)
+    recupMois = date_frame.groupby(["Weeks", "Date"])["Purchased Qty"].sum().reset_index()
+
+    with col7:
+        maximal = recupMois.loc[recupMois["Purchased Qty"].idxmax()]
+        string_convert_max = str(maximal["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
+        string_convert_max = string_convert_max.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
+        st.metric(label="Best weekly purchase (Pcs)", value=db["Purchased Qty"].max(), delta= string_convert_max[0])
+    
+    with col8:
+        minimal = recupMois.loc[recupMois["Purchased Qty"].idxmin()]
+        string_convert_min = str(minimal["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
+        string_convert_min = string_convert_min.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
+        st.metric(label="Bad weekly purchase (Pcs)", value=db["Purchased Qty"].min(), delta= string_convert_min[0]) # Afficher le metric de la semaine avec moins d'achats
+    
+    # Graphic 
     data_weeks = px.line(db, x="Weeks", y="Purchased Qty", title="Situation purchase by weeks", text="Purchased Qty")
     data_weeks.update_traces(textposition = 'top center')
     st.plotly_chart(data_weeks)
+
+    #############################
+    # Target and Achievement
+    # ####### 
+
+    st.subheader("Target & Achievment", divider="rainbow")
+
+    view_2025 = dataset_full[dataset_full["Years"] == 2025]
+    target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
+
+    def creer_target_si_un_mois(target_2025):
+        if target_2025["Months"].nunique() == 1:
+            target_2025["Target"] = 16000
+            return target_2025["Target"]
+        
+        elif target_2025["Months"].nunique() == 2:
+            target_2025["Target"] = [16000, 16000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 3:  
+            target_2025["Target"] = [16000, 16000, 16000] # Creation d'une colonne target
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 4:
+            target_2025["Target"] = [16000, 16000, 16000, 17000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 5:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 6:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 7:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 8:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 9:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 10:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 11:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000]
+            return target_2025["Target"]
+        elif target_2025["Months"].nunique() == 12:
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000, 20000]
+            return target_2025["Target"]
+        else:
+            return None  # ou gérer autrement si plusieurs mois
+        
+    target = creer_target_si_un_mois(target_2025)
+
+    # Creation graphic combiner (bar and line)
+    #"""
+    fig_cmb = go.Figure()
+
+    #-- Barre pour l'achievment ---
+    fig_cmb.add_trace(go.Bar(
+        x = target_2025["Months"],
+        y = target_2025["Purchased Qty"],
+        name = "Achievment",
+        text = target_2025["Purchased Qty"],
+        textposition= "auto", # il y a 'auto' 'outside' 'inside'
+        marker_color = "skyblue"
+    ))
+
+    #-- Ligne pour le target --
+    fig_cmb.add_trace(go.Scatter(
+        x = target_2025["Months"],
+        y = target,
+        name ="Target (Pcs)",
+        mode = 'lines+text+markers',
+        text = target_2025["Target"],
+        textposition= "top center",
+        line = dict(color = "orange", width = 3)
+    ))
+    #"""
+
+    # Mettre a jour la mise en page
+    #"""
+    fig_cmb.update_layout(
+        title = "Target and Achievment for 2025", 
+        yaxis = dict(title= "Purchase (Pcs)"),
+        yaxis2 = dict(title= "Buy", overlaying = 'y', side = 'right'), 
+        xaxis = dict(title = "Month"),
+        legend = dict(x=0.1, y=1.1, orientation = 'h'), 
+        bargap = 0.3
+    )
+
+    st.plotly_chart(fig_cmb)
+
 
     # Situation by years
     st.subheader("Situation purchase by Years", divider="rainbow")
@@ -230,10 +357,3 @@ if file is not None:
         barre_BR = px.bar(products, x="Products", y="B-R Profit($)", color="Products", text= "B-R Profit($)", title="Profit of B price on R price")
         barre_BR.update_traces(textposition = 'outside')
         st.plotly_chart(barre_BR)
-
-
-    
-        
-
-
-
