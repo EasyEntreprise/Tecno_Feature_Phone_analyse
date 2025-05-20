@@ -95,11 +95,11 @@ if file is not None:
 
         # Metric
 
-        Kin = st.metric(label="Number SD to KINSHASA", value= kinshasa, delta=client_kin["Customers Name"])
-        Kat = st.metric(label="Number SD to KATANGA", value= katanga, delta=client_kat["Customers Name"])
-        KongC = st.metric(label="Number SD to KONGO-CENTRAL", value= kcongo, delta=client_kc["Customers Name"])
-        BigK = st.metric(label="Number SD to Big-KASAÏ", value= bkasai, delta=client_bk["Customers Name"])
-        BigE = st.metric(label="Number SD to Big-Equator", value= bequator, delta=client_be["Customers Name"])
+        Kin = st.metric(label="SD to KINSHASA", value= kinshasa, delta=client_kin["Customers Name"])
+        Kat = st.metric(label="SD to KATANGA", value= katanga, delta=client_kat["Customers Name"])
+        KongC = st.metric(label="SD to KONGO-CENTRAL", value= kcongo, delta=client_kc["Customers Name"])
+        BigK = st.metric(label="SD to Big-KASAÏ", value= bkasai, delta=client_bk["Customers Name"])
+        BigE = st.metric(label="SD to Big-Equator", value= bequator, delta=client_be["Customers Name"])
 
 
         # Style the metric
