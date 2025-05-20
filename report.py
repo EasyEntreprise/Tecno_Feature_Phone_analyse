@@ -56,20 +56,29 @@ if file_st is not None:
     ## Situation general des achats
     st.subheader("ST General situation", divider="rainbow")
     
+    #####################
     # 1- Yearly buy
+    ######
+    
     buy_st = dataset_full_st.groupby(["Years"], as_index= False)["Purchased Qty"].sum()
     fig_buy = px.line(buy_st, x="Years", y="Purchased Qty", text="Purchased Qty", title="Yearly purchase")
     fig_buy.update_traces(textposition = 'top center')
     st.plotly_chart(fig_buy)
     st.markdown("___")
 
+    ###############
     # 2-Monthly
+    ######
+
     month_st = date_frame_st.groupby(["Years", "Months"], as_index= False)["Purchased Qty"].sum()
     fig_month = px.line(month_st, x="Months", y="Purchased Qty", text="Purchased Qty", title="Monthly purchase")
     fig_month.update_traces(textposition = 'top center')
     st.plotly_chart(fig_month)
 
+    ######################################
     ## Situation semestriel des achats
+    ######
+
     st.subheader("ST Weekly situation", divider="grey")
     
     col3, col4 = st.columns(2)
@@ -79,7 +88,28 @@ if file_st is not None:
         weeks = date_frame_st.groupby(["Years", "Weeks"], as_index= False)["Purchased Qty"].sum()
         filter_weeks = weeks[weeks["Years"]== annee]
 
-        fig_week = px.line(filter_weeks, x="Weeks", y="Purchased Qty", title=f"Weecky {annee} purchase", text="Purchased Qty")
+        #----------------------------
+        recupMois_old_years = date_frame_st.groupby(["Weeks", "Date", "Years"])["Purchased Qty"].sum().reset_index()
+        filter_old_years = recupMois_old_years[recupMois_old_years["Years"]== annee]
+        db = filter_old_years.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+        
+        colv, colw = st.columns(2)
+        with colv:
+            maximal = filter_old_years.loc[filter_old_years["Purchased Qty"].idxmax()]
+            string_convert_max = str(maximal["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
+            string_convert_max = string_convert_max.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
+            st.metric(label="Best weekly purchase (Pcs)", value=db["Purchased Qty"].max(), delta= string_convert_max[0])
+            
+
+        with colw:
+            minimal = filter_old_years.loc[filter_old_years["Purchased Qty"].idxmin()]
+            string_convert_min = str(minimal["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
+            string_convert_min = string_convert_min.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
+            st.metric(label="Bad weekly purchase (Pcs)", value=db["Purchased Qty"].min(), delta= string_convert_min[0]) # Afficher le metric de la semaine avec moins d'achats
+            
+        #----------------------------
+
+        fig_week = px.line(filter_weeks, x="Weeks", y="Purchased Qty", title=f"Weekly {annee} purchase", text="Purchased Qty")
         fig_week.update_traces(textposition = 'top center')
         st.plotly_chart(fig_week)
 
@@ -88,9 +118,34 @@ if file_st is not None:
         weeks_y = date_frame_st.groupby(["Years", "Weeks"], as_index= False)["Purchased Qty"].sum()
         filter_weeks_y = weeks_y[weeks_y["Years"]== weeks_enter]
 
-        fig_week_y = px.line(filter_weeks_y, x="Weeks", y="Purchased Qty", title=f"Weecky {weeks_enter} purchase", text="Purchased Qty")
+        #----------------------------
+        recupMois_new_years = date_frame_st.groupby(["Weeks", "Date", "Years"])["Purchased Qty"].sum().reset_index()
+        filter_new_years = recupMois_new_years[recupMois_new_years["Years"]== weeks_enter ]
+        db_new = filter_new_years.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+        
+        colx, coly = st.columns(2)
+        with colx:
+            maximal_new = filter_new_years.loc[filter_new_years["Purchased Qty"].idxmax()]
+            string_convert_max_new = str(maximal_new["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
+            string_convert_max_new = string_convert_max_new.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
+            st.metric(label="Best weekly purchase (Pcs)", value=db_new["Purchased Qty"].max(), delta= string_convert_max_new[0])
+            
+
+        with coly:
+            minimal_new = filter_new_years.loc[filter_new_years["Purchased Qty"].idxmin()]
+            string_convert_min_new = str(minimal_new["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
+            string_convert_min_new = string_convert_min_new.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
+            st.metric(label="Bad weekly purchase (Pcs)", value=db_new["Purchased Qty"].min(), delta= string_convert_min_new[0]) # Afficher le metric de la semaine avec moins d'achats
+            
+        #----------------------------
+
+        fig_week_y = px.line(filter_weeks_y, x="Weeks", y="Purchased Qty", title=f"Weekly {weeks_enter} purchase", text="Purchased Qty")
         fig_week_y.update_traces(textposition = 'top center')
         st.plotly_chart(fig_week_y)
+
+
+    # Style the metric
+    style_metric_cards(background_color="#636363", border_left_color="#a8ff78", border_color="#9FC1FF")
 
     ##################################
     ## Situation par modeles
@@ -186,7 +241,6 @@ if file_st is not None:
         fig_channel_pie = go.Figure(data=[go.Pie(labels= channel["City"], values= channel["Purchased Qty"], title=f"Channel proportion for {weeks_enter}", opacity= 0.5)])
         fig_channel_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_channel_pie)
-        pass
 
 
     ##################################
@@ -194,7 +248,7 @@ if file_st is not None:
     ####   
     st.subheader("Target & Achievment", divider="grey")
 
-    view_2025 = date_frame_st[date_frame_st["Years"] == 2025]
+    view_2025 = dataset_full_st[dataset_full_st["Years"] == 2025]
     target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
 
     def creer_target_si_un_mois(target_2025):
@@ -315,7 +369,9 @@ if file_sd is not None:
     ###
     date_frame_sd = dataset_sd[(dataset_sd["Date"]>=str(start_date_sd)) & (dataset_sd["Date"]<=str(en_date_sd))]
 
+    #################################
     ## Situation general des achats
+    ######
     st.subheader("SD General situation", divider="rainbow")
     
     sd_years = dataset_full_sd.groupby("Years", as_index= False)["Purchases Qty (Pcs)"].sum()
@@ -340,8 +396,11 @@ if file_sd is not None:
         fig_month_2 = px.line(filtre_mois_2, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Month for year {weeks_enter}")
         fig_month_2.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_2)
-
+    
+    ################################
     ## SD situation by region
+    ########
+
     st.subheader("SD situation by region", divider="blue")
 
     colc, cold = st.columns(2)
@@ -360,8 +419,10 @@ if file_sd is not None:
         fig_city.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city)
         
-
+    ##########################
     ## SD model situation
+    #####
+
     st.subheader("SD models situation", divider="blue")
 
     cole, colf = st.columns(2)
@@ -380,8 +441,102 @@ if file_sd is not None:
         fig_city_md.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city_md)
 
+    #########################
+    ## SD model situation
+    #######
 
+    st.subheader("SD Target and Achievement", divider="blue")
+
+    SD_view_2025 = dataset_full_sd[dataset_full_sd["Years"] == 2025]
+    SD_target_2025 = SD_view_2025.groupby("Date", as_index= False)["Purchases Qty (Pcs)"].sum()
+
+    def creer_target_sd_mois(SD_target_2025):
+        if SD_target_2025["Date"].nunique() == 1:
+            SD_target_2025["Target"] = 9600
+            return SD_target_2025["Target"]
+        
+        elif SD_target_2025["Date"].nunique() == 2:
+            SD_target_2025["Target"] = [9600, 9600]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 3:  
+            SD_target_2025["Target"] = [9600, 9600, 9600] # Creation d'une colonne target
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 4:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 5:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 6:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 7:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 8:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 9:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 10:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 11:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000, 12000]
+            return SD_target_2025["Target"]
+        elif SD_target_2025["Date"].nunique() == 12:
+            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000, 12000, 12000]
+            return SD_target_2025["Target"]
+        else:
+            return None  # ou gérer autrement si plusieurs mois
+        
+    sd_target = creer_target_sd_mois(SD_target_2025)
+
+
+    # Creation graphic combiner (bar and line)
+    #"""
+    SD_fig_cmb = go.Figure()
+
+    #-- Barre pour l'achievment ---
+    SD_fig_cmb.add_trace(go.Bar(
+        x = SD_target_2025["Date"],
+        y = SD_target_2025["Purchases Qty (Pcs)"],
+        name = "Achievment",
+        text = SD_target_2025["Purchases Qty (Pcs)"],
+        textposition= "auto", # il y a 'auto' 'outside' 'inside'
+        marker_color = "skyblue"
+    ))
+
+    #-- Ligne pour le target --
+    SD_fig_cmb.add_trace(go.Scatter(
+        x = SD_target_2025["Date"],
+        y = sd_target,
+        name ="Target (Pcs)",
+        mode = 'lines+text+markers',
+        text = SD_target_2025["Target"],
+        textposition= "top center",
+        line = dict(color = "orange", width = 3)
+    ))
+    #"""
+
+    # Mettre a jour la mise en page
+    #"""
+    SD_fig_cmb.update_layout(
+        title = "Sub-dealers > Target and Achievment for 2025", 
+        yaxis = dict(title= "Purchases Qty (Pcs)"),
+        yaxis2 = dict(title= "Buy", overlaying = 'y', side = 'right'), 
+        xaxis = dict(title = "Month"),
+        legend = dict(x=0.1, y=1.1, orientation = 'h'), 
+        bargap = 0.3
+    )
+
+    st.plotly_chart(SD_fig_cmb)
+
+    #####################
     ## SD Performance
+    ######
+    
     st.subheader("SD Performance", divider="blue")
 
     colg, colh = st.columns(2)
@@ -399,11 +554,13 @@ if file_sd is not None:
         fig_sd = px.bar(filtre_sd, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation for year {weeks_enter}", color="Customers Name")
         fig_sd.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sd)
-
+    
+    ###
     # Comparer les achats par client
 
     clients = date_frame_sd["Customers Name"].unique()
-
+    
+    ###
     # Select customer
     select_sdx =  st.selectbox("Choose your sub-dealer", clients)
 
