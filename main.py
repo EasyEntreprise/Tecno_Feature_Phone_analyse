@@ -12,7 +12,7 @@ from streamlit_extras.metric_cards import style_metric_cards
 
 # Config page
 st.set_page_config(
-    page_title="DashBoard", 
+    page_title="Tecno FP Business", 
     layout="wide", 
     page_icon=":material/bar_chart:"
 )
