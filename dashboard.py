@@ -231,7 +231,7 @@ if file is not None:
 
     st.subheader("Target & Achievment", divider="rainbow")
 
-    view_2025 = dataset_full[dataset_full["Years"] == 2025]
+    view_2025 = date_frame[date_frame["Years"] == 2025] # dataset_full
     target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
 
     def creer_target_si_un_mois(target_2025):
@@ -311,13 +311,14 @@ if file is not None:
         yaxis2 = dict(title= "Buy", overlaying = 'y', side = 'right'), 
         xaxis = dict(title = "Month"),
         legend = dict(x=0.1, y=1.1, orientation = 'h'), 
-        bargap = 0.3
+        bargap = 0.8
     )
 
     st.plotly_chart(fig_cmb)
 
-
+    ##########################
     # Situation by years
+    ####
     st.subheader("Situation purchase by Years", divider="rainbow")
     dataset_years = dataset.groupby("Years")["Purchased Qty"].sum().reset_index()
     data_years = px.line(dataset_years, x="Years", y="Purchased Qty", title="Situation purchase by years", text="Purchased Qty")
