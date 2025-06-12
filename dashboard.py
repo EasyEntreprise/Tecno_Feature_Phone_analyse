@@ -18,7 +18,7 @@ st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our feature
 st.markdown("___")
 
 # Load dataset
-file = st.file_uploader("Inserer votre fichier Excel ou CSV en appuyant sur le bouton 'Browse files'", type=["xlsx", "csv"])
+file = st.file_uploader("Inserer votre fichier Excel en appuyant sur le bouton 'Browse files'", type=["xlsx","xls"])
 
 if file is not None:
     dataset_full = pd.read_excel(file)
@@ -40,7 +40,7 @@ if file is not None:
         en_date = st.date_input(label="End Dates")
 
     # Provide a message for selected date range 
-    st.error(" you have choosen analytics from: "+str(start_date)+" to "+str(en_date))
+    st.success(" you have choosen analytics from: "+str(start_date)+" to "+str(en_date))
 
     # Filtre dates
     date_frame = dataset[(dataset["Date"]>=str(start_date)) & (dataset["Date"]<=str(en_date))]
@@ -93,7 +93,7 @@ if file is not None:
 
         #st.markdown("___")
         area_data = date_frame.groupby("City")["Purchased Qty"].sum().reset_index()
-        fig_pie = go.Figure(data=[go.Pie(labels= area_data["City"], values= area_data["Purchased Qty"], title="Proportion des données par City", opacity= 0.5)])
+        fig_pie = go.Figure(data=[go.Pie(labels= area_data["City"], values= area_data["Purchased Qty"], title="Proportion purchase by City", opacity= 0.5)])
         fig_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_pie)
 
@@ -169,6 +169,11 @@ if file is not None:
     fig_product = px.bar(date_groupbyx, x="Products", y="Purchased Qty", color="Products", text="Purchased Qty")
     fig_product.update_traces(textposition = 'outside')
     st.plotly_chart(fig_product)
+
+    fig_product_pie = go.Figure(data = [go.Pie(labels = date_groupbyx["Products"], values= date_groupbyx["Purchased Qty"], title = "Proportions models", opacity=0.5)])
+    fig_product_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
+    st.plotly_chart(fig_product_pie)
+
 
     ##################################
     # Situation Models by years
@@ -252,25 +257,25 @@ if file is not None:
             target_2025["Target"] = [16000, 16000, 16000, 17000, 17000]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 6:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900] # [16000, 16000, 16000, 17000, 17000, 17000]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 7:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300] # [16000, 16000, 16000, 17000, 17000, 17000, 18500]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 8:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 9:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 10:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700, 14700] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 11:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700, 14700, 16100] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000]
             return target_2025["Target"]
         elif target_2025["Months"].nunique() == 12:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000, 20000]
+            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700, 14700, 16100, 17500] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000, 20000]
             return target_2025["Target"]
         else:
             return None  # ou gérer autrement si plusieurs mois
