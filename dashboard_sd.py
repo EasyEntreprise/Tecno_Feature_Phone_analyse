@@ -19,7 +19,7 @@ st.markdown("___")
 ########################
 # Load dataset
 ###
-file = st.file_uploader("Inserer votre fichier Excel ou CSV en appuyant sur le bouton 'Browse files'", type=["xlsx", "csv"])
+file = st.file_uploader("Insert your Excel file by pressing the 'Browse files' button", type=["xlsx","xls"])
 
 if file is not None:
     dataset_full = pd.read_excel(file)
@@ -41,7 +41,7 @@ if file is not None:
         en_date = st.date_input(label="End Dates")
 
     # Provide a message for selected date range 
-    st.error("you have choosen analytics from: "+str(start_date)+" to "+str(en_date))
+    st.success("you have choosen analytics from: "+str(start_date)+" to "+str(en_date))
 
     ##################
     # Filtre dates
@@ -223,25 +223,25 @@ if file is not None:
             target_2025["Target"] = [9600, 9600, 9600, 10200, 10200]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 6:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 7:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 8:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 9:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 11760]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 10:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 11760, 11760]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 11:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000, 12000]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 11760, 11760, 12880]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 12:
-            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 10200, 11100, 11100, 11400, 12000, 12000, 12000]
+            target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 117600, 11760, 12880, 14000]
             return target_2025["Target"]
         else:
             return None  # ou gérer autrement si plusieurs mois
