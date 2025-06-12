@@ -32,11 +32,18 @@ dashboard2 = st.Page(
     icon = ":material/bar_chart:"
 )
 
+dashboard3 = st.Page(
+    page = "dashboard_so.py",
+    title = "SO DashBoard",
+    icon = ":material/bar_chart:"
+)
+
 report = st.Page(
     page = "report.py",
     title = "TECNO FP REPORT",
     icon = ":material/bar_chart:"
 )
+
 
 about_me = st.Page(
     page = "about_me.py",
@@ -47,7 +54,7 @@ about_me = st.Page(
 # Navigation betwen pages
 page = st.navigation(
     {
-        "Dashboard":[dashboard, dashboard2],
+        "Dashboard":[dashboard, dashboard2, dashboard3],
         "Report":[report],
         "Info":[about_me]
 
