@@ -412,9 +412,15 @@ if sale is not None:
 
     # Afficher les activation et inactivations
     shop_activation = shop_select.groupby("Activation Status", as_index=False)["Sales Qty"].count()
-    graph_shop_activ = px.bar(activation_gen, x="Activation Status", y="Sales Qty", color="Activation Status", text= "Sales Qty", title= f"Activation and Unactivation for the shop : {select_shops}")
+    graph_shop_activ = px.bar(shop_activation, x="Activation Status", y="Sales Qty", color="Activation Status", text= "Sales Qty", title= f"Activation and Inactivation for the shop : {select_shops}")
     graph_shop_activ.update_traces(textposition = 'outside')
     st.plotly_chart(graph_shop_activ)
+
+    # Pays de delivrance pour les produits vendus dans les shops
+    shop_deliv = shop_select.groupby("Delivery Country", as_index= False)["Sales Qty"].sum()
+    fig_shop_deliv = px.bar(shop_deliv, x="Delivery Country", y="Sales Qty", color="Delivery Country", text="Sales Qty", title=f"Delivery Country of the shop : {select_shops}")
+    fig_shop_deliv.update_traces(textposition = 'outside')
+    st.plotly_chart(fig_shop_deliv)
 
             
     ##########################################
