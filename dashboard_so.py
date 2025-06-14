@@ -30,9 +30,6 @@ if sale is not None:
     couverture_1 = pd.read_excel(coverage, sheet_name="Shop Inventory Query")
     couverture = couverture_1.dropna(subset="Available Quantity") # On supprime les lignes qui n'ont pas de quantite disponible
 
-    #st.write(achat)
-            
-    #"""
     #######################################
     ###### Traitement du fichier ##########
     # ##################################### 
@@ -178,10 +175,29 @@ if sale is not None:
         else :
             st.metric(label="BIG EQUATOR", value= 0, delta= "Coverage BIG EQUATOR : 0")
         
-        
 
     # Style the metric
     style_metric_cards(background_color="#3c4d66", border_left_color="#99f2c8", border_color="#0006a")
+
+    zcol1, zcol2 = st.columns(2, gap="small")
+
+    with zcol1 :
+
+        nbr_shop_region = (date_frame.groupby("City")["Shop Name"].unique().reset_index()) # On recupere les shops avec vente par region
+        nbr_shop_region["count"] = nbr_shop_region["Shop Name"].apply(len) # On creer une colonne qui aura le nombre des shops par regions
+
+        fig_nbr_shop_region = px.line(nbr_shop_region, x="City", y="count", text= "count", title="Number of shop with sell by regions")
+        fig_nbr_shop_region.update_traces(textposition = 'top center')
+        st.plotly_chart(fig_nbr_shop_region)
+    
+    with zcol2 :
+        nbr_cover_region = (couverture_dr.groupby("City")["Shop Name"].unique().reset_index()) # On recupere les shops avec couverture par region
+        nbr_cover_region["count"] = nbr_cover_region["Shop Name"].apply(len) # On creer une colonne qui aura le nombre des shops par regions
+
+        fig_cover_shop_region = px.line(nbr_cover_region, x="City", y="count", text= "count", title="Number of shop with coverage by regions")
+        fig_cover_shop_region.update_traces(textposition = 'top center')
+        st.plotly_chart(fig_cover_shop_region)
+
 
             
     ##########################################
