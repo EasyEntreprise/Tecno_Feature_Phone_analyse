@@ -88,8 +88,8 @@ if sale is not None:
     col7, col8, col9, col0, col01 = st.columns(5, gap="small")
 
     with col3:
-        shop_sell = date_frame["Shop Name"].nunique()
-        st.metric(label="TOTAL SHOPS WITH SELL", value= shop_sell ) # Les nombres total des shops avec vente
+        shop_sales = date_frame["Shop Name"].nunique()
+        st.metric(label="TOTAL SHOPS WITH SALES", value= shop_sales ) # Les nombres total des shops avec vente
 
     with col4:
         shop_cover = couverture_dr["Shop Name"].nunique()
@@ -97,7 +97,7 @@ if sale is not None:
 
     with col5:
         total_vente = date_frame["Sales Qty"].sum()
-        st.metric(label="TOTAL SELL", value= total_vente) # Total vente en general
+        st.metric(label="TOTAL SALES", value= total_vente) # Total vente en general
         
     with col6:
         total_cover = couverture_dr["Available Quantity"].sum()
@@ -108,69 +108,69 @@ if sale is not None:
     
     
     with col7:
-        kinshasa_sell = city[city["City"] == "Kinshasa"] 
+        kinshasa_sales = city[city["City"] == "Kinshasa"] 
         kinshasa_cover = city_cover[city_cover["City"] == "Kinshasa"]
         
-        kinshasa_sell["Sales Qty"] = kinshasa_sell["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier
+        kinshasa_sales["Sales Qty"] = kinshasa_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier
         kinshasa_cover["Available Quantity"] = kinshasa_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not kinshasa_sell.empty :
-            st.metric(label="KINSHASA", value= int(kinshasa_sell["Sales Qty"]), delta= f"Coverage Kinshasa : {int(kinshasa_cover['Available Quantity'])}") # La Situation de la vente de la region Kinshasa avec situation couverture comme delta
+        if not kinshasa_sales.empty :
+            st.metric(label="KINSHASA", value= int(kinshasa_sales["Sales Qty"]), delta= f"Coverage Kinshasa : {int(kinshasa_cover['Available Quantity'])}") # La Situation de la vente de la region Kinshasa avec situation couverture comme delta
         else:
             st.metric(label="KINSHASA", value= 0, delta= "Coverage Kinshasa : 0") 
 
 
     with col8:
-        katanga_sell = city[city["City"] == "Big Katanga"]
+        katanga_sales = city[city["City"] == "Big Katanga"]
         katanga_cover = city_cover[city_cover["City"] == "Big Katanga"] 
 
-        katanga_sell["Sales Qty"] = katanga_sell["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
+        katanga_sales["Sales Qty"] = katanga_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         katanga_cover["Available Quantity"] = katanga_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not katanga_sell.empty :
-            st.metric(label="BIG KATANGA", value= int(katanga_sell["Sales Qty"]), delta= f"Coverage Katanga : {int(katanga_cover["Available Quantity"])}") # La Situation de la vente de la region Big Katanga avec situation couverture comme delta
+        if not katanga_sales.empty :
+            st.metric(label="BIG KATANGA", value= int(katanga_sales["Sales Qty"]), delta= f"Coverage Katanga : {int(katanga_cover["Available Quantity"])}") # La Situation de la vente de la region Big Katanga avec situation couverture comme delta
 
         else :
             st.metric(label="BIG KATANGA", value= 0, delta= "Coverage Katanga : 0")
         
 
     with col9:
-        kongoc_sell = city[city["City"] == "Kongo Centrale"] 
+        kongoc_sales = city[city["City"] == "Kongo Centrale"] 
         kongoc_cover = city_cover[city_cover["City"] == "Kongo Centrale"] 
 
-        kongoc_sell["Sales Qty"] = kongoc_sell["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
+        kongoc_sales["Sales Qty"] = kongoc_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         kongoc_cover["Available Quantity"] = kongoc_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not kongoc_sell.empty :
-            st.metric(label="CENTRAL KONGO", value= int(kongoc_sell["Sales Qty"]), delta= f"Coverage Kongo Central : {int(kongoc_cover["Available Quantity"])}") # La Situation de la vente de la region Kongo Central avec situation couverture comme delta
+        if not kongoc_sales.empty :
+            st.metric(label="CENTRAL KONGO", value= int(kongoc_sales["Sales Qty"]), delta= f"Coverage Kongo Central : {int(kongoc_cover["Available Quantity"])}") # La Situation de la vente de la region Kongo Central avec situation couverture comme delta
 
         else :
             st.metric(label="CENTRAL KONGO", value= 0, delta= "Coverage Central Kongo : 0")
         
 
     with col0:
-        kasai_sell = city[city["City"] == "Big Kasai"] 
+        kasai_sales = city[city["City"] == "Big Kasai"] 
         kasai_cover = city_cover[city_cover["City"] == "Big Kasai"] 
 
-        kasai_sell["Sales Qty"] = kasai_sell["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
+        kasai_sales["Sales Qty"] = kasai_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         kasai_cover["Available Quantity"] = kasai_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not kasai_sell.empty :
-            st.metric(label="BIG KASAI", value= int(kasai_sell["Sales Qty"]), delta= f"Coverage Big Kasai : {int(kasai_cover["Available Quantity"])}") # La Situation de la vente de la region Big Kasai avec situation couverture comme delta
+        if not kasai_sales.empty :
+            st.metric(label="BIG KASAI", value= int(kasai_sales["Sales Qty"]), delta= f"Coverage Big Kasai : {int(kasai_cover["Available Quantity"])}") # La Situation de la vente de la region Big Kasai avec situation couverture comme delta
 
         else :
             st.metric(label="BIG KASAI", value= 0, delta= "Coverage BIG KASAI : 0")
         
 
     with col01:
-        equator_sell = city[city["City"] == "Big Equateur"] 
+        equator_sales = city[city["City"] == "Big Equateur"] 
         equator_cover = city_cover[city_cover["City"] == "Big Equateur"] 
 
-        equator_sell["Sales Qty"] = equator_sell["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
+        equator_sales["Sales Qty"] = equator_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         equator_cover["Available Quantity"] = equator_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not equator_sell.empty :
-            st.metric(label="BIG EQUATOR", value= int(equator_sell["Sales Qty"]), delta= f"Coverage Big Equator : {int(equator_cover["Available Quantity"])}") # La Situation de la vente de la region Big Equa avec situation couverture comme delta
+        if not equator_sales.empty :
+            st.metric(label="BIG EQUATOR", value= int(equator_sales["Sales Qty"]), delta= f"Coverage Big Equator : {int(equator_cover["Available Quantity"])}") # La Situation de la vente de la region Big Equa avec situation couverture comme delta
 
         else :
             st.metric(label="BIG EQUATOR", value= 0, delta= "Coverage BIG EQUATOR : 0")
@@ -186,7 +186,7 @@ if sale is not None:
         nbr_shop_region = (date_frame.groupby("City")["Shop Name"].unique().reset_index()) # On recupere les shops avec vente par region
         nbr_shop_region["count"] = nbr_shop_region["Shop Name"].apply(len) # On creer une colonne qui aura le nombre des shops par regions
 
-        fig_nbr_shop_region = px.line(nbr_shop_region, x="City", y="count", text= "count", title="Number of shop with sell by regions")
+        fig_nbr_shop_region = px.line(nbr_shop_region, x="City", y="count", text= "count", title="Number of shop with sales by regions")
         fig_nbr_shop_region.update_traces(textposition = 'top center')
         st.plotly_chart(fig_nbr_shop_region)
     
@@ -204,29 +204,29 @@ if sale is not None:
     ### VENTE MENSUELLE ET SEMESTRIELLE ######
     ##########################################
             
-    st.subheader("MONTHLY AND WEEKLY SELLS", divider="gray")
+    st.subheader("MONTHLY AND WEEKLY SALES", divider="gray")
 
     # Graph 2 : Situation de la vente mensuelle
     # Graphique en line avec comme argument (Month et Sale Qty)
-    monthly_sell = date_frame.groupby("Month", as_index= False)["Sales Qty"].sum()
+    monthly_sale = date_frame.groupby("Month", as_index= False)["Sales Qty"].sum()
     
-    fig_monthly_sell = px.line(monthly_sell, x="Month", y="Sales Qty", text= "Sales Qty", title= "Monthly retail sales")
-    fig_monthly_sell.update_traces(textposition = 'top center')
-    st.plotly_chart(fig_monthly_sell)
+    fig_monthly_sale = px.line(monthly_sale, x="Month", y="Sales Qty", text= "Sales Qty", title= "Monthly retail sales")
+    fig_monthly_sale.update_traces(textposition = 'top center')
+    st.plotly_chart(fig_monthly_sale)
 
-    monthly_sell_max = monthly_sell.max()
+    monthly_sale_max = monthly_sale.max()
 
-    #st.write(f"Best Month : {monthly_sell_max["Month"]} with as realization : {qty}" ) # Nous allons afficher le mois et sa realisation
+    #st.write(f"Best Month : {monthly_sale_max["Month"]} with as realization : {qty}" ) # Nous allons afficher le mois et sa realisation
     #st.write(f"Bad Month : {mois} with as realization : {qty}" ) # Nous allons afficher le mois et sa realisation
             
     st.markdown("___")
     # Graph 3 : Situation de la vente semestrielle 
     # Graphique en line avec comme argument (Week et Sale Qty)
-    weekly_sell = date_frame.groupby("Week", as_index= False)["Sales Qty"].sum()
+    weekly_sale = date_frame.groupby("Week", as_index= False)["Sales Qty"].sum()
     
-    fig_weekly_sell = px.line(weekly_sell, x="Week", y="Sales Qty", text="Sales Qty", title= "Weekly retail sales")
-    fig_weekly_sell.update_traces(textposition = 'top center')
-    st.plotly_chart(fig_weekly_sell)
+    fig_weekly_sale = px.line(weekly_sale, x="Week", y="Sales Qty", text="Sales Qty", title= "Weekly retail sales")
+    fig_weekly_sale.update_traces(textposition = 'top center')
+    st.plotly_chart(fig_weekly_sale)
 
     recupMois = date_frame.groupby(["Month", "Week"])["Sales Qty"].sum().reset_index()
     idx_max = recupMois["Sales Qty"].idxmax() # On recupere l'indice de la ligne ayant la vente maximal
@@ -247,7 +247,7 @@ if sale is not None:
     ### VENTE & COVERAGE PAR MODELES ######
     #######################################
             
-    st.subheader("SELL AND COVERAGE BY MODELS", divider="gray")
+    st.subheader("SALES AND COVERAGE BY MODELS", divider="gray")
 
     colc, cold = st.columns(2, gap="small")
 
@@ -256,9 +256,9 @@ if sale is not None:
         # Graph 4 : Situation de la vente par modeles (models, qty) [Graphic en Bar]
         models = date_frame.groupby("Model", as_index= False)["Sales Qty"].sum()
 
-        fig_model_sell = px.bar(models, x="Model", y="Sales Qty", color="Model", text="Sales Qty", title="Sell by Models")
-        fig_model_sell.update_traces(textposition = 'outside')
-        st.plotly_chart(fig_model_sell)
+        fig_model_sales = px.bar(models, x="Model", y="Sales Qty", color="Model", text="Sales Qty", title="sales by Models")
+        fig_model_sales.update_traces(textposition = 'outside')
+        st.plotly_chart(fig_model_sales)
 
         st.markdown("___")
         ####
@@ -280,7 +280,7 @@ if sale is not None:
         st.markdown("___")
         # Graph 6 : Meme chose mais en graphic Pie
         #liste = date_frame["Model"].unique()
-        fig_pie = go.Figure(data=[go.Pie(labels= models["Model"], values= models["Sales Qty"], title="Proportion sell by Models", opacity= 0.5)])
+        fig_pie = go.Figure(data=[go.Pie(labels= models["Model"], values= models["Sales Qty"], title="Proportion sales by Models", opacity= 0.5)])
         fig_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_pie)
         
@@ -305,16 +305,16 @@ if sale is not None:
     ### VENTE MODELES PAR REGIONS ######### 
     #######################################
             
-    st.subheader("SELL MODELS BY REGIONS", divider="gray")
+    st.subheader("SALES MODELS BY REGIONS", divider="gray")
     # Afficher les modeles vendu par  region
-    region_sell = date_frame.groupby(["City", "Model"], as_index= False)["Sales Qty"].sum()
-    graph_region_sell = px.bar(region_sell, x="City", y="Sales Qty", barmode= "group", color="Model", text= "Sales Qty", title= "Sell models by region")
-    graph_region_sell.update_traces(textposition = 'outside')
-    st.plotly_chart(graph_region_sell)
+    region_sales = date_frame.groupby(["City", "Model"], as_index= False)["Sales Qty"].sum()
+    graph_region_sales = px.bar(region_sales, x="City", y="Sales Qty", barmode= "group", color="Model", text= "Sales Qty", title= "sales models by region")
+    graph_region_sales.update_traces(textposition = 'outside')
+    st.plotly_chart(graph_region_sales)
     
     # Proportion de la vente par region en 'Pie' [ Region, Qty]
     region_pie = date_frame.groupby(["City"], as_index= False)["Sales Qty"].sum()
-    graph_region_pie = go.Figure(data=[go.Pie(labels= region_pie["City"], values= region_pie["Sales Qty"], title="Proportion sell by regions", opacity= 0.5)])
+    graph_region_pie = go.Figure(data=[go.Pie(labels= region_pie["City"], values= region_pie["Sales Qty"], title="Proportion sales by regions", opacity= 0.5)])
     graph_region_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
     st.plotly_chart(graph_region_pie)
 
@@ -324,14 +324,14 @@ if sale is not None:
 
     with c1 :
         activation_gen = date_frame.groupby("Activation Status", as_index=False)["Sales Qty"].count()
-        graph_activ_sell = px.bar(activation_gen, x="Activation Status", y="Sales Qty", color="Activation Status", text= "Sales Qty", title= "General activation and Unactivation")
-        graph_activ_sell.update_traces(textposition = 'outside')
-        st.plotly_chart(graph_activ_sell)
+        graph_activ_sales = px.bar(activation_gen, x="Activation Status", y="Sales Qty", color="Activation Status", text= "Sales Qty", title= "General activation and Inactivation")
+        graph_activ_sales.update_traces(textposition = 'outside')
+        st.plotly_chart(graph_activ_sales)
         
     # Activation/Inactivation par region
     with c2 :
         activation_region = date_frame.groupby(["Activation Status", "City"], as_index=False)["Sales Qty"].count()
-        graph_activ_region = px.bar(activation_region, x="City", y="Sales Qty", color="Activation Status", text= "Sales Qty", title= "Regional activation and Unactivation")
+        graph_activ_region = px.bar(activation_region, x="City", y="Sales Qty", color="Activation Status", text= "Sales Qty", title= "Regional activation and Inactivation")
         graph_activ_region.update_traces(textposition = 'outside')
         st.plotly_chart(graph_activ_region)
         
@@ -368,27 +368,27 @@ if sale is not None:
         unsafe_allow_html= True
         )
 
-    total_sellx = shop_select.groupby("Shop Name", as_index = False)["Sales Qty"].sum()
+    total_salesx = shop_select.groupby("Shop Name", as_index = False)["Sales Qty"].sum()
 
     with m2 :
         st.markdown(
             f"""
             <div style= "background-color : #99f2c8; padding : 20px;
             border-radius : 10px; width : 380px">
-            <p style = "margin : 5px 0; font-size : 24px; font-weight : bold; ">Total Sell :</p>
-            <p style = "margin : 0; color : white; font-size : 40px;">{int(total_sellx["Sales Qty"])}pcs</p>
+            <p style = "margin : 5px 0; font-size : 24px; font-weight : bold; ">Total sales :</p>
+            <p style = "margin : 0; color : white; font-size : 40px;">{int(total_salesx["Sales Qty"])}pcs</p>
             </div>
         """,
         unsafe_allow_html= True
         )
     
-    st.write(int(total_sellx["Sales Qty"]))
+    st.write(int(total_salesx["Sales Qty"]))
 
     
     # Afficher ses ventes mensuel
 
     vente_mensuel = shop_select.groupby(["Shop Name", "Month"], as_index= False)["Sales Qty"].sum()
-    fig_shop_select_bar = px.line(vente_mensuel, x="Month", y="Sales Qty", text="Sales Qty", title=f"Sell of shop : {select_shops} by months")
+    fig_shop_select_bar = px.line(vente_mensuel, x="Month", y="Sales Qty", text="Sales Qty", title=f"Sales of shop : {select_shops} by months")
     fig_shop_select_bar.update_traces(textposition = 'top center')
     st.plotly_chart(fig_shop_select_bar)
 
@@ -416,11 +416,11 @@ if sale is not None:
     # Afficher les models vendu
     shopModels = shop_select.groupby("Model", as_index= False)["Sales Qty"].sum()
 
-    fig_shopModels = px.bar(shopModels, x="Model", y="Sales Qty", color="Model", text="Sales Qty", title= f"Sell by Models for shop : {select_shops} ")
+    fig_shopModels = px.bar(shopModels, x="Model", y="Sales Qty", color="Model", text="Sales Qty", title= f"Sales by Models for shop : {select_shops} ")
     fig_shopModels.update_traces(textposition = 'outside')
     st.plotly_chart(fig_shopModels)
 
-    graph_shop_pie = go.Figure(data=[go.Pie(labels= shopModels["Model"], values= shopModels["Sales Qty"], title= f"Proportion sell for the shop : {select_shops}", opacity= 0.5)])
+    graph_shop_pie = go.Figure(data=[go.Pie(labels= shopModels["Model"], values= shopModels["Sales Qty"], title= f"Proportion Sales for the shop : {select_shops}", opacity= 0.5)])
     graph_shop_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
     st.plotly_chart(graph_shop_pie)
 
