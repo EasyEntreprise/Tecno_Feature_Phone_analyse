@@ -194,7 +194,7 @@ if sale is not None:
         nbr_cover_region = (couverture_dr.groupby("City")["Shop Name"].unique().reset_index()) # On recupere les shops avec couverture par region
         nbr_cover_region["count"] = nbr_cover_region["Shop Name"].apply(len) # On creer une colonne qui aura le nombre des shops par regions
 
-        fig_cover_shop_region = px.line(nbr_cover_region, x="City", y="count", text= "count", title="Number of shop with coverage by regions")
+        fig_cover_shop_region = px.line(nbr_cover_region, x="City", y="count", text= "count", title="Quantity of shop with coverage by regions")
         fig_cover_shop_region.update_traces(textposition = 'top center')
         st.plotly_chart(fig_cover_shop_region)
 
@@ -299,6 +299,24 @@ if sale is not None:
         fig_pie_cov = go.Figure(data=[go.Pie(labels= covert["Model"], values= covert["Available Quantity"], title="Proportion coverage by Models", opacity= 0.5)])
         fig_pie_cov.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_pie_cov)
+        st.markdown("___")
+
+        # Graph 9 : Graphique en 'Bar', selectionant le modele pour connaitre le notre des shops ayant sa couverture par regions
+        models_covert = couverture_dr["Model"].unique()
+        select_model = st.selectbox("Choose one model for seeing his coverage", models_covert) # Selectionner le shop
+
+        choix = couverture_dr[couverture_dr["Model"] == select_model]
+
+        cover_region = (choix.groupby("City")["Shop Name"].unique().reset_index()) 
+
+        cover_region["count"] = cover_region["Shop Name"].apply(len) 
+
+        fig_cover_region = px.line(cover_region, x="City", y="count", text= "count", title= f"Quantity shop with coverage by regions for models {select_model }")
+        fig_cover_region.update_traces(textposition = 'top center')
+        st.plotly_chart(fig_cover_region)
+
+
+
         
 
     #######################################
