@@ -35,7 +35,7 @@ if sale is not None:
     # ##################################### 
             
     # Suppression des colonnes des dataframe
-    achat_drop = achat.drop(["Shop ID", "Shop Alias", "Status", "Shop Brand", "Public ID", "Shop Type", "Manpower Type", "Shop Grade", "Image Type", "Product Category", "Brand", "Series", "Model Type", "SP/FP", "Item", "Market Name", "Item(Market Name)", "Material ID", "Product", "IMEI/SN", "IMEI/SN List", "Booking Activity ID", "Suggested RP", "Unit Price", "Activation City", "Activation Date", "7 Days Active", "15 Days Active", "E Warranty Date", "Upload On Other System", "Time Difference", "Achieve or Not", "Reason", "Coupon No", "Achieve Rule", "Free Gift No", "Consumer Phone", "Consumer Name", "Consumer Mail", "Attachments", "Incentive Status", "Incentive Date",	"Country",	"City",	"City Tier", "Sales Region 1",	"Sales Region 3",	"Sales Region 4",	"Sales Region 5",	"Business Area",	"Uploader ID", "Uploader", "Upload Date",	"Upload Time",	"Position",	"Upload Type",	"Created By",	"Updater",	"Update Name",	"Updated Time",	"Supervisor Name", "Supervisor ID",	"Area Sales Manager Name",	"Area Sales Manager ID", "Branch Sales Manager Name",	"Branch Sales Manager ID",	"Region Sales Manager Name", "Region Sales Manager ID",	"Remark", "Record ID", "Carlcare Shop Code", "POS ID",	"Consumer Gender",	"Consumer Age",	"Distributor ID",	"Distributor Name",	"Belong MD ID",	"Belong MD Name",	"Customer Price", "Retailer Price",	"MOP",	"Source Type",	"Staff Achieve or Not",	"IMEI Picture",	"Reason of User",	"AI Detection Status",	"Manual Detection Status",	"Fake Status",	"Retailer ID",	"Retailer Name"], axis=1) 
+    achat_drop = achat.drop(["Shop ID", "Shop Alias", "Status", "Shop Brand", "Public ID", "Shop Type", "Manpower Type", "Shop Grade", "Image Type", "Product Category", "Brand", "Series", "Model Type", "SP/FP", "Item", "Market Name", "Item(Market Name)", "Material ID", "Product", "IMEI/SN", "IMEI/SN List", "Booking Activity ID", "Suggested RP", "Unit Price", "Activation City", "7 Days Active", "15 Days Active", "E Warranty Date", "Upload On Other System", "Time Difference", "Achieve or Not", "Reason", "Coupon No", "Achieve Rule", "Free Gift No", "Consumer Phone", "Consumer Name", "Consumer Mail", "Attachments", "Incentive Status", "Incentive Date",	"Country",	"City",	"City Tier", "Sales Region 1",	"Sales Region 3",	"Sales Region 4",	"Sales Region 5",	"Business Area",	"Uploader ID", "Uploader", "Upload Date",	"Upload Time",	"Position",	"Upload Type",	"Created By",	"Updater",	"Update Name",	"Updated Time",	"Supervisor Name", "Supervisor ID",	"Area Sales Manager Name",	"Area Sales Manager ID", "Branch Sales Manager Name",	"Branch Sales Manager ID",	"Region Sales Manager Name", "Region Sales Manager ID",	"Remark", "Record ID", "Carlcare Shop Code", "POS ID",	"Consumer Gender",	"Consumer Age",	"Distributor ID",	"Distributor Name",	"Belong MD ID",	"Belong MD Name",	"Customer Price", "Retailer Price",	"MOP",	"Source Type",	"Staff Achieve or Not",	"IMEI Picture",	"Reason of User",	"AI Detection Status",	"Manual Detection Status",	"Fake Status",	"Retailer ID",	"Retailer Name"], axis=1) 
     # Suppresionn des colonnes de l'achat
     couverture_drop = couverture.drop(["Shop ID",	"Brand", "SP/FP", "Series",	"First Category", "Item", "Market Name", "Color", "Memory",	"Manpower Type", "Retailer ID",	"Retailer Name", "Public ID", "Shop Type",	"Shop Grade",	"Image Type", "Sales Region 1",	"Sales Region 3",	"Sales Region 4", "Sales Region 5",	"Country", "City",	"Remark"], axis= 1) # Suppresion des colonnes de la couverture
 
@@ -114,8 +114,8 @@ if sale is not None:
         kinshasa_sales["Sales Qty"] = kinshasa_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier
         kinshasa_cover["Available Quantity"] = kinshasa_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not kinshasa_sales.empty :
-            st.metric(label="KINSHASA", value= int(kinshasa_sales["Sales Qty"]), delta= f"Coverage Kinshasa : {int(kinshasa_cover['Available Quantity'])}") # La Situation de la vente de la region Kinshasa avec situation couverture comme delta
+        if not kinshasa_sales.empty or (not kinshasa_cover.empty) :
+            st.metric(label="KINSHASA", value= int(kinshasa_sales["Sales Qty"].fillna(0).sum()), delta= f"Coverage Kinshasa : {int(kinshasa_cover['Available Quantity'].fillna(0).sum())}") # La Situation de la vente de la region Kinshasa avec situation couverture comme delta
         else:
             st.metric(label="KINSHASA", value= 0, delta= "Coverage Kinshasa : 0") 
 
@@ -127,8 +127,8 @@ if sale is not None:
         katanga_sales["Sales Qty"] = katanga_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         katanga_cover["Available Quantity"] = katanga_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not katanga_sales.empty :
-            st.metric(label="BIG KATANGA", value= int(katanga_sales["Sales Qty"]), delta= f"Coverage Katanga : {int(katanga_cover["Available Quantity"])}") # La Situation de la vente de la region Big Katanga avec situation couverture comme delta
+        if not katanga_sales.empty or (not katanga_sales.empty):
+            st.metric(label="BIG KATANGA", value= int(katanga_sales["Sales Qty"].fillna(0).sum()), delta= f"Coverage Katanga : {int(katanga_cover["Available Quantity"].fillna(0).sum())}") # La Situation de la vente de la region Big Katanga avec situation couverture comme delta
 
         else :
             st.metric(label="BIG KATANGA", value= 0, delta= "Coverage Katanga : 0")
@@ -141,8 +141,8 @@ if sale is not None:
         kongoc_sales["Sales Qty"] = kongoc_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         kongoc_cover["Available Quantity"] = kongoc_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not kongoc_sales.empty :
-            st.metric(label="CENTRAL KONGO", value= int(kongoc_sales["Sales Qty"]), delta= f"Coverage Kongo Central : {int(kongoc_cover["Available Quantity"])}") # La Situation de la vente de la region Kongo Central avec situation couverture comme delta
+        if not kongoc_sales.empty or (not kongoc_cover.empty) :
+            st.metric(label="CENTRAL KONGO", value= int(kongoc_sales["Sales Qty"].fillna(0).sum()), delta= f"Coverage Kongo Central : {int(kongoc_cover["Available Quantity"].fillna(0).sum())}") # La Situation de la vente de la region Kongo Central avec situation couverture comme delta
 
         else :
             st.metric(label="CENTRAL KONGO", value= 0, delta= "Coverage Central Kongo : 0")
@@ -155,11 +155,13 @@ if sale is not None:
         kasai_sales["Sales Qty"] = kasai_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         kasai_cover["Available Quantity"] = kasai_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not kasai_sales.empty :
-            st.metric(label="BIG KASAI", value= int(kasai_sales["Sales Qty"]), delta= f"Coverage Big Kasai : {int(kasai_cover["Available Quantity"])}") # La Situation de la vente de la region Big Kasai avec situation couverture comme delta
+
+        if not kasai_sales.empty or (not kasai_cover.empty) :
+            st.metric(label="BIG KASAI", value= int(kasai_sales["Sales Qty"].fillna(0).sum()), delta= f"Coverage Big Kasai : {int(kasai_cover['Available Quantity'].fillna(0).sum())}") # La Situation de la vente de la region Big Kasai avec situation couverture comme delta
 
         else :
             st.metric(label="BIG KASAI", value= 0, delta= "Coverage BIG KASAI : 0")
+
         
 
     with col01:
@@ -169,8 +171,8 @@ if sale is not None:
         equator_sales["Sales Qty"] = equator_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         equator_cover["Available Quantity"] = equator_cover["Available Quantity"].fillna(0).astype(int)
 
-        if not equator_sales.empty :
-            st.metric(label="BIG EQUATOR", value= int(equator_sales["Sales Qty"]), delta= f"Coverage Big Equator : {int(equator_cover["Available Quantity"])}") # La Situation de la vente de la region Big Equa avec situation couverture comme delta
+        if not equator_sales.empty or (not equator_cover.empty) :
+            st.metric(label="BIG EQUATOR", value= int(equator_sales["Sales Qty"].fillna(0).sum()), delta= f"Coverage Big Equator : {int(equator_cover["Available Quantity"].fillna(0).sum())}") # La Situation de la vente de la region Big Equa avec situation couverture comme delta
 
         else :
             st.metric(label="BIG EQUATOR", value= 0, delta= "Coverage BIG EQUATOR : 0")
@@ -294,26 +296,25 @@ if sale is not None:
         st.plotly_chart(fig_models_covert) 
         #st.write(covert)
         st.markdown("___")
-        
-        # Graph 8 : Meme chose mais en graphic Pie
-        fig_pie_cov = go.Figure(data=[go.Pie(labels= covert["Model"], values= covert["Available Quantity"], title="Proportion coverage by Models", opacity= 0.5)])
-        fig_pie_cov.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
-        st.plotly_chart(fig_pie_cov)
-        st.markdown("___")
 
-        # Graph 9 : Graphique en 'Bar', selectionant le modele pour connaitre le notre des shops ayant sa couverture par regions
+        # Graph 8 : Graphique en 'Bar', selectionant le modele pour connaitre le notre des shops ayant sa couverture par regions
         models_covert = couverture_dr["Model"].unique()
         select_model = st.selectbox("Choose one model for seeing his coverage", models_covert) # Selectionner le shop
 
         choix = couverture_dr[couverture_dr["Model"] == select_model]
-
         cover_region = (choix.groupby("City")["Shop Name"].unique().reset_index()) 
-
         cover_region["count"] = cover_region["Shop Name"].apply(len) 
 
         fig_cover_region = px.line(cover_region, x="City", y="count", text= "count", title= f"Quantity shop with coverage by regions for models {select_model }")
         fig_cover_region.update_traces(textposition = 'top center')
         st.plotly_chart(fig_cover_region)
+        
+        st.markdown("___")
+
+        # Graph 9 : Meme chose mais en graphic Pie
+        fig_pie_cov = go.Figure(data=[go.Pie(labels= covert["Model"], values= covert["Available Quantity"], title="Proportion coverage by Models", opacity= 0.5)])
+        fig_pie_cov.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
+        st.plotly_chart(fig_pie_cov)
 
 
 
@@ -399,8 +400,6 @@ if sale is not None:
         """,
         unsafe_allow_html= True
         )
-    
-    st.write(int(total_salesx["Sales Qty"]))
 
     
     # Afficher ses ventes mensuel
@@ -456,6 +455,16 @@ if sale is not None:
     fig_shop_deliv.update_traces(textposition = 'outside')
     st.plotly_chart(fig_shop_deliv)
 
+    # Pays d'activations pour les produits vendus dans les shops
+    activation_produits = shop_select.groupby("Activation Country", as_index= False)["Sales Qty"].sum()
+    graph_activ_p = px.bar(activation_produits, x="Activation Country", y="Sales Qty", color = "Activation Country", text="Sales Qty", title= f"Countries activation of product sold by the shop {select_shops}")
+    graph_activ_p.update_traces(textposition = 'outside')
+    st.plotly_chart(graph_activ_p)
+
+    shops_date = shop_select.groupby(["Activation Country", "Activation Date"], as_index = False)["Sales Qty"].sum()
+   
+    st.dataframe(shops_date, use_container_width= True)
+
             
     ##########################################
     ### DELIVRANCY AND ACTIVATION COUNTRIES ##
@@ -475,4 +484,11 @@ if sale is not None:
     fig_monde = px.choropleth(data_frame= pays_activ, locations= pays_activ["Activation Country"], locationmode="country names", color="Sales Qty", color_continuous_scale = 'Viridis', title = 'Activation countries')
     st.plotly_chart(fig_monde)
 
+    fig_world = px.bar(pays_activ, x= "Activation Country", y="Sales Qty", color="Activation Country", text = "Sales Qty", title = 'General Activation countries ')
+    fig_world.update_traces(textposition = 'outside')
+    st.plotly_chart(fig_world)
+
+    pays_date = date_frame.groupby(["Activation Country", "Activation Date"], as_index = False)["Sales Qty"].sum()
+
+    st.dataframe(pays_date, use_container_width= True)
     #"""
