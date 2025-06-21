@@ -111,11 +111,11 @@ if file is not None:
         
 
         key3,key4 = st.columns(2)
-        T528 = date_frame[date_frame["Products"]=="T528"]
-        key3.metric(label="Model T528 (Pcs)", value= T528["Purchased Qty"].sum(), delta=T528["Purchased Qty"].mean()) 
-
         T528New = date_frame[date_frame["Products"]=="T528 New"]
-        key4.metric(label="Model T528 New (Pcs)", value= T528New["Purchased Qty"].sum(), delta=T528New["Purchased Qty"].mean())
+        key3.metric(label="Model T528 New (Pcs)", value= T528New["Purchased Qty"].sum(), delta=T528New["Purchased Qty"].mean()) 
+
+        T455 = date_frame[date_frame["Products"]=="T455"]
+        key4.metric(label="Model T455 (Pcs)", value= T455["Purchased Qty"].sum(), delta=T455["Purchased Qty"].mean())
 
         dataset_kin = date_frame[date_frame["City"]=="KIN"]
         dataset_Lushi = date_frame[date_frame["City"]=="Lushi"]
