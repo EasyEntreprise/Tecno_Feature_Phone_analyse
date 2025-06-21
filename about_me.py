@@ -16,6 +16,7 @@ with col2:
         "Junior Data Analyst, Data Engener, Data Scientist, Machine and Deep Learning and  IT Cyber-security.",
         "C.E.O at Easy Holding"
     )
+    st.markdown("[GMAIL](https://www.gmail.com)")
 #"""
 
 # --- EXPERIENCE AND QUALIFICATION ---
