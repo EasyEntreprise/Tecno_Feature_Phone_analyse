@@ -6,6 +6,10 @@ import plotly.graph_objects as go
 import altair as alt
 from streamlit_extras.dataframe_explorer import dataframe_explorer
 from streamlit_extras.metric_cards import style_metric_cards
+from prophet import Prophet
+from prophet.plot import plot_plotly, plot_components_plotly
+import os
+import time
 
 st.markdown("<h1 style='text-align: center; color: blue;'> TECNO FEATURE PHONE YEARLY REPORT"
 "</h1>", unsafe_allow_html= True)
@@ -16,6 +20,54 @@ st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our feature
 "</h6>", unsafe_allow_html= True)
 
 st.markdown("___")
+
+# Boutons fermeture et rederamarrage
+ferm, rederm = st.columns(2)
+with ferm:
+    # ------------------------------
+    # 🔴 Bouton Fermer (avec confirmation)
+    # ------------------------------
+    if "confirm_exit" not in st.session_state:
+        st.session_state.confirm_exit = False
+
+    if st.session_state.confirm_exit:
+        st.warning("❗ Are you sure you want to stop using the application altogether ?")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✅ Yes, stop "):
+                st.error("🛑 Closing the application... ")
+                time.sleep(1)
+                os._exit(0)
+        with col2:
+            if st.button("❌ No, cancel "):
+                st.session_state.confirm_exit = False
+    else:
+        if st.button("🛑 Close application "):
+            st.session_state.confirm_exit = True
+
+with rederm:
+    # ------------------------------
+    # 🔄 Bouton Redémarrer (avec confirmation)
+    # ------------------------------
+    if "confirm_restart" not in st.session_state:
+        st.session_state.confirm_restart = False
+
+    if st.session_state.confirm_restart:
+        st.warning("❗ Are you sure you want to restart the application ? ")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✅ Yes, restart "):
+                st.info("🔄 Restarting the application...")
+                time.sleep(1)
+                st.experimental_rerun()
+        with col2:
+            if st.button("❌ No, cancel"):
+                st.session_state.confirm_restart = False
+    else:
+        if st.button("🔄 Restart application "):
+            st.session_state.confirm_restart = True
+st.markdown("___")
+
 ########################
 # Load dataset
 ###
@@ -69,9 +121,17 @@ if file_st is not None:
     ###############
     # 2-Monthly
     ######
+    
+    # Create a list for each years
+    years_selected = date_frame_st["Years"].unique()
+    
+    # Create the selector
+    select_years = st.multiselect("Select your years", years_selected, default=[2024, 2025])
 
+    # Data Filtrage 
     month_st = date_frame_st.groupby(["Years", "Months"], as_index= False)["Purchased Qty"].sum()
-    fig_month = px.line(month_st, x="Months", y="Purchased Qty", text="Purchased Qty", title="Monthly purchase")
+    filter = month_st[month_st["Years"].isin(select_years)]
+    fig_month = px.line(filter, x="Months", y="Purchased Qty", text="Purchased Qty", title="Monthly purchase")
     fig_month.update_traces(textposition = 'top center')
     st.plotly_chart(fig_month)
 
@@ -336,6 +396,196 @@ if file_st is not None:
     st.plotly_chart(fig_cmb)
     #"""
 
+    ##############################
+    #### PREDICTION DES ACHATS ###
+    ##############################
+
+    st.header("Future Purchasing Forecasts", divider="rainbow")
+
+    #############################
+    ## 1- Predictions Global
+
+    st.subheader("1. 📊Global Forecasts")
+
+    dataset_st["Months"] = pd.to_datetime(dataset_st["Months"])
+    st.success(f"{len(dataset_st)} lignes de données chargées avec succès ✅")
+
+    # Regrouper les ventes par mois
+    prediction_global = dataset_st.groupby("Months")["Purchased Qty"].sum().reset_index()
+    prediction_global = prediction_global.rename(columns={"Months":"ds", "Purchased Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+
+    # Modèle Prophet
+    purchases_global = Prophet()
+    purchases_global.fit(prediction_global)
+
+    # Prévision sur 3 mois
+    predict_futur = purchases_global.make_future_dataframe(periods=12, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    forecast_global = purchases_global.predict(predict_futur)
+
+    # -------------------------------
+    # 4️⃣ Affichage des données
+    # -------------------------------
+    
+    with st.expander("📄 View raw forecast data"):
+        st.dataframe(forecast_global[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail())
+
+
+    ##############################
+    #### Affichage des résultats
+    ##########
+
+    # Graphique Plotly (interactif)
+
+    bg_color = st.sidebar.color_picker("Background", "#f0f8ff")
+    paper_color = st.sidebar.color_picker("Background general", "#ffffff")
+
+    fig_global = plot_plotly(purchases_global, forecast_global)
+    fig_global.update_layout(
+        title = "Prévision Globale des ventes Tecno",
+        xaxis_title = "Date",
+        yaxis_title ="Purchases Quantity",
+        template ="plotly_white",
+        
+        plot_bgcolor = bg_color,     #'rgba(240,248,255,1)',  # 🔹 bleu très clair à l'intérieur du graphique
+        paper_bgcolor = paper_color, #'rgba(255,255,255,1)', # 🔹 fond général blanc
+    )
+
+    st.plotly_chart(fig_global, use_container_width=True)
+
+    
+    #############################
+    ## 2- Predictions Par Ville
+    st.subheader("2. 📊City Forecasts")
+
+    # Vérifier les colonnes requises
+    required_cols = {"City", "Months", "Purchased Qty"}
+    if not required_cols.issubset(dataset_st.columns):
+        st.error(f"The file must contain the columns : {', '.join(required_cols)}")
+        st.stop()
+    
+    # Préparer les données
+    
+    date_ville = dataset_st.groupby(["City", "Months"], as_index= False)["Purchased Qty"].sum() 
+    date_ville = date_ville.rename(columns={"Months":"ds", "Purchased Qty":"y"})
+    date_ville["ds"] = pd.to_datetime(date_ville["ds"])
+
+    cities = sorted(dataset_st["City"].unique())
+    st.success(f"✅ {len(cities)} cities detected : {', '.join(cities)}")
+
+    # -------------------------------
+    # Paramètres utilisateur
+    # -------------------------------
+    nb_mois = st.slider("Number of months to predict", 1, 12, 3)  # 3 mois par défaut
+
+    col1, col2 = st.columns(2)
+    predictions_all = []
+
+    # -------------------------------
+    # Prévision par ville
+    # -------------------------------
+    st.header("📈 Forecasts by City")
+
+    for i, city in enumerate(cities):
+        city_data = date_ville[date_ville["City"] == city][["ds", "y"]]
+        
+        if len(city_data) < 5:
+            st.warning(f"⚠️ Too little data for {city}, forecast ignored.")
+            continue
+
+        model_ville = Prophet()
+        model_ville.fit(city_data)
+        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='M')
+        forecast_ville = model_ville.predict(future_ville)
+        forecast_ville["City"] = city
+        predictions_all.append(forecast_ville)
+
+        # Graphique interactif
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=city_data["ds"], y=city_data["y"], mode="markers+lines", name="Historique"))
+        fig.add_trace(go.Scatter(x=forecast_ville["ds"], y=forecast_ville["yhat"], mode="lines", name="Prévision"))
+        fig.update_layout(title=f"📍 {city}", xaxis_title="Date", yaxis_title="Quantité", template="plotly_white")
+
+        # Affichage côte à côte
+        if i % 2 == 0:
+            with col1:
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            with col2:
+                st.plotly_chart(fig, use_container_width=True)
+
+    # -------------------------------
+    # 4️⃣ Comparatif entre villes
+    # -------------------------------
+    if predictions_all:
+        predictions_all = pd.concat(predictions_all)
+
+        # Dernière date prévue = prévision la plus récente
+        latest_date = predictions_all["ds"].max()
+        summary = (
+            predictions_all[predictions_all["ds"] == latest_date]
+            .groupby("City")["yhat"]
+            .sum()
+            .reset_index()
+            .sort_values(by="yhat", ascending=False)
+        )
+
+        st.text("🏆 Ranking of Cities by Purchasing Forecast")
+        
+        col3, col4 = st.columns([2, 1])
+        with col3:
+            fig_bar = px.bar(
+                summary,
+                x="City",
+                y="yhat",
+                title="Average purchasing forecasts by city",
+                labels={"yhat": "Expected quantity", "City": "City"},
+                text_auto=".0f",
+                color="City"
+            )
+            fig_bar.update_layout(template="plotly_white")
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+        with col4:
+            st.dataframe(summary.rename(columns={"yhat": "Planned quantity"}), hide_index=True)
+
+    else:
+        st.info("⬆️ Import your Excel file to get started.")
+
+
+    ##############################
+    ## 3- Predictions Par Modeles
+    st.subheader("3. 📊Models Forecasts")
+
+    # use dataset
+    # Creation d'une selecteur multiple
+    models_data = dataset_st["Products"].unique()
+    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data, default="T101")
+
+    # Filtrage des donnees en fonction de la selection
+    st_models_choose_all = dataset_st[dataset_st["Products"].isin(select_models_all)]
+    st_models_all = st_models_choose_all.groupby("Months")["Purchased Qty"].sum().reset_index()
+    st_models_all = st_models_all.rename(columns={"Months": "ds", "Purchased Qty": "y"})
+
+    model_forecast_all = Prophet()
+    model_forecast_all.fit(st_models_all)
+
+    model_future_all = model_forecast_all.make_future_dataframe(periods=12, freq='M')
+    forecast_model_all = model_forecast_all.predict(model_future_all)
+
+    st.write(f"📊 Forecast Evolution by {select_models_all}")
+    fig_model_preview_all = plot_plotly(model_forecast_all, forecast_model_all)
+    fig_model_preview_all.update_layout(
+        title = "ST purchase model forcast ",
+        xaxis_title = "Months",
+        yaxis_title ="Purchases Quantity by model",
+        template ="plotly_white",
+        
+        plot_bgcolor = bg_color,     #'rgba(240,248,255,1)',  # 🔹 bleu très clair à l'intérieur du graphique
+        paper_bgcolor = paper_color, #'rgba(255,255,255,1)', # 🔹 fond général blanc
+    )
+    st.plotly_chart(fig_model_preview_all, use_container_width=True)
+
+
 
 ##########################################################################################################################################################
 ########################################################### Partie 2 : SD REPORT  ########################################################################
@@ -464,39 +714,39 @@ if file_sd is not None:
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 4:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 5:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 6:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 7:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 8:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 9:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 11760]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 10:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 11760, 11760]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200, 9500]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 11:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 11760, 11760, 12880]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200, 9500, 10465]
             return SD_target_2025["Target"]
         
         elif SD_target_2025["Date"].nunique() == 12:
-            SD_target_2025["Target"] = [9600, 9600, 9600, 10200, 10200, 9520, 10640, 10640, 117600, 11760, 12880, 14000]
+            SD_target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200, 9500, 10465, 11375]
             return SD_target_2025["Target"]
         
         else:
@@ -596,6 +846,191 @@ if file_sd is not None:
         fig_sub_custo = px.bar(filter_custo, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Purchase situation of {select_sdx} for year {weeks_enter}", color="Products")
         fig_sub_custo.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sub_custo)
+
+
+    ##############################
+    #### PREDICTION DES ACHATS ###
+    #############################
+    
+    st.header("FUTURE PURCHASING FORECASTS", divider="rainbow")
+
+    #############################
+    ## 1- Predictions Global
+
+    st.subheader("1. 📊Global Forecasts")
+
+    dataset_sd["Date"] = pd.to_datetime(dataset_sd["Date"])
+    st.success(f"{len(dataset_sd)} lignes de données chargées avec succès ✅")
+
+    # Regrouper les ventes par mois
+    prediction_global = dataset_sd.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
+    prediction_global = prediction_global.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+
+    # Modèle Prophet
+    purchases_global = Prophet()
+    purchases_global.fit(prediction_global)
+
+    # Prévision sur 3 mois
+    predict_futur = purchases_global.make_future_dataframe(periods=12, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    forecast_global = purchases_global.predict(predict_futur)
+    
+
+    # -------------------------------
+    # 4️⃣ Affichage des données
+    # -------------------------------
+    with st.expander("📄 Voir les données de prévision brutes"):
+        st.dataframe(forecast_global[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail())
+
+
+    ##############################
+    #### Affichage des résultats
+    ##########
+
+    # Graphique Plotly (interactif)
+
+    fig_global = plot_plotly(purchases_global, forecast_global)
+    fig_global.update_layout(
+        title = "Prévision Globale des ventes Tecno",
+        xaxis_title = "Date",
+        yaxis_title ="Quantité achetée",
+        template ="plotly_white",
+        
+        plot_bgcolor = bg_color,     #'rgba(240,248,255,1)',  # 🔹 bleu très clair à l'intérieur du graphique
+        paper_bgcolor = paper_color, #'rgba(255,255,255,1)', # 🔹 fond général blanc
+    )
+
+    st.plotly_chart(fig_global, use_container_width=True)
+
+    ##############################
+    ## 2- Predictions Par Modeles
+    st.subheader("2. 📊Models Forecasts")
+
+    # Creation d'une selecteur multiple
+    select_models_all = st.multiselect("Please can you select your model here : ?", models_data, default="T101")
+
+    # Filtrage des donnees en fonction de la selection
+    sd_models_choose_all = dataset_sd[dataset_sd["Products"].isin(select_models_all)]
+    sd_models_all = sd_models_choose_all.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
+    sd_models_all = sd_models_all.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
+
+    model_forecast_all = Prophet()
+    model_forecast_all.fit(sd_models_all)
+
+    model_future_all = model_forecast_all.make_future_dataframe(periods=12, freq='M')
+    forecast_model_all = model_forecast_all.predict(model_future_all)
+
+    st.write(f"📊 Forecast Evolution by {select_models_all}")
+    fig_model_preview_all = plot_plotly(model_forecast_all, forecast_model_all)
+    fig_model_preview_all.update_layout(
+        title = "Clients purchase model forcast ",
+        xaxis_title = "Months",
+        yaxis_title ="Purchases Quantity by model",
+        template ="plotly_white",
+        
+        plot_bgcolor = bg_color,     #'rgba(240,248,255,1)',  # 🔹 bleu très clair à l'intérieur du graphique
+        paper_bgcolor = paper_color, #'rgba(255,255,255,1)', # 🔹 fond général blanc
+    )
+    st.plotly_chart(fig_model_preview_all, use_container_width=True)
+
+
+    #############################
+    ## 3- Predictions Par Ville
+    st.subheader("3. 📊Cities Forecasts")
+
+    # Vérifier les colonnes requises
+    required_cols = {"Cities", "Date", "Purchases Qty (Pcs)"}
+    if not required_cols.issubset(dataset_sd.columns):
+        st.error(f"The file must contain the columns : {', '.join(required_cols)}")
+        st.stop()
+    
+    # Préparer les données
+    
+    date_ville = dataset_sd.groupby(["Cities", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum() 
+    date_ville = date_ville.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})
+    date_ville["ds"] = pd.to_datetime(date_ville["ds"])
+
+    cities = sorted(dataset_sd["Cities"].unique())
+    st.success(f"✅ {len(cities)} cities detected : {', '.join(cities)}")
+
+    # -------------------------------
+    # Paramètres utilisateur
+    # -------------------------------
+    nb_mois = st.slider("Number of months to predict", 1, 3, 12)  # 3 mois par défaut
+
+    col1, col2 = st.columns(2)
+    predictions_all = []
+
+    # -------------------------------
+    # Prévision par ville
+    # -------------------------------
+    st.header("📈 Forecasts by City")
+
+    for i, city in enumerate(cities):
+        city_data = date_ville[date_ville["Cities"] == city][["ds", "y"]]
+        
+        if len(city_data) < 5:
+            st.warning(f"⚠️ Too little data for {city}, forecast ignored.")
+            continue
+
+        model_ville = Prophet()
+        model_ville.fit(city_data)
+        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='M')
+        forecast_ville = model_ville.predict(future_ville)
+        forecast_ville["Cities"] = city
+        predictions_all.append(forecast_ville)
+
+        # Graphique interactif
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=city_data["ds"], y=city_data["y"], mode="markers+lines", name="Historique"))
+        fig.add_trace(go.Scatter(x=forecast_ville["ds"], y=forecast_ville["yhat"], mode="lines", name="Prévision"))
+        fig.update_layout(title=f"📍 {city}", xaxis_title="Date", yaxis_title="Quantité", template="plotly_white")
+
+        # Affichage côte à côte
+        if i % 2 == 0:
+            with col1:
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            with col2:
+                st.plotly_chart(fig, use_container_width=True)
+
+    # -------------------------------
+    # 4️⃣ Comparatif entre villes
+    # -------------------------------
+    if predictions_all:
+        predictions_all = pd.concat(predictions_all)
+
+        # Dernière date prévue = prévision la plus récente
+        latest_date = predictions_all["ds"].max()
+        summary = (
+            predictions_all[predictions_all["ds"] == latest_date]
+            .groupby("Cities")["yhat"]
+            .sum()
+            .reset_index()
+            .sort_values(by="yhat", ascending=False)
+        )
+
+        st.text("🏆 Ranking of Cities by Purchasing Forecast")
+        
+        col3, col4 = st.columns([2, 1])
+        with col3:
+            fig_bar = px.bar(
+                summary,
+                x="Cities",
+                y="yhat",
+                title="Average purchasing forecasts by city",
+                labels={"yhat": "Expected quantity", "City": "City"},
+                text_auto=".0f",
+                color="Cities"
+            )
+            fig_bar.update_layout(template="plotly_white")
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+        with col4:
+            st.dataframe(summary.rename(columns={"yhat": "Planned quantity"}), hide_index=True)
+
+    else:
+        st.info("⬆️ Import your Excel file to get started.")
+
         
 
 
