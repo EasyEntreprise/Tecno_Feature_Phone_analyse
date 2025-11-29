@@ -9,6 +9,8 @@ import plotly.express as px
 import altair as alt
 from streamlit_extras.dataframe_explorer import dataframe_explorer
 from streamlit_extras.metric_cards import style_metric_cards
+from prophet import Prophet
+from prophet.plot import plot_plotly, plot_components_plotly
 
 # Config page
 st.set_page_config(
@@ -21,26 +23,58 @@ st.set_page_config(
 
 dashboard = st.Page(
     page="dashboard.py",
-    title="ST DashBoard",
+    title="ST DashBoard for FP",
     icon=":material/bar_chart:",
     default= True
 )
 
+
 dashboard2 = st.Page(
     page = "dashboard_sd.py",
-    title = "SD DashBoard",
+    title = "SD DashBoard for FP",
     icon = ":material/bar_chart:"
 )
 
 dashboard3 = st.Page(
     page = "dashboard_so.py",
-    title = "SO DashBoard",
+    title = "SO DashBoard for FP",
+    icon = ":material/bar_chart:"
+)
+
+dashboard4 = st.Page(
+    page="SP_dashboard_ST.py",
+    title="ST DashBoard for SP",
+    icon=":material/bar_chart:",
+   
+)
+
+dashboard5 = st.Page(
+    page="SP_dashboard_SD.py",
+    title="SD DashBoard for SP",
+    icon=":material/bar_chart:",
+)
+
+dashboard6 = st.Page(
+    page = "SP_dashboard_so.py",
+    title = "SO DashBoard for SP",
+    icon = ":material/bar_chart:"
+)
+
+dashboard7 = st.Page(
+    page = "dashboard_retail.py",
+    title = "TECNO RETAIL BUSINESS",
     icon = ":material/bar_chart:"
 )
 
 report = st.Page(
     page = "report.py",
     title = "TECNO FP REPORT",
+    icon = ":material/bar_chart:"
+)
+
+report_SP = st.Page(
+    page = "SP_report.py",
+    title = "TECNO SP REPORT",
     icon = ":material/bar_chart:"
 )
 
@@ -51,11 +85,28 @@ about_me = st.Page(
     icon = ":material/account_circle:" 
 )
 
+converter = st.Page(
+    page = "csv converter.py",
+    title = "Excel to CSV Converter",
+    icon = ":material/file_download:"
+)
+
+fusion_file = st.Page(
+    page= "fusion_excel_to_csv.py",
+    title= "Combine multiple Excel files",
+    icon= ""
+
+)
+
 # Navigation betwen pages
 page = st.navigation(
     {
-        "Dashboard":[dashboard, dashboard2, dashboard3],
-        "Report":[report],
+        "Dashboard FP":[dashboard, dashboard2, dashboard3],
+        "Dashboard SP":[dashboard4, dashboard5, dashboard6],
+        "Retail Dashboard":[dashboard7],
+        "Fusion Excel to CSV":[fusion_file],
+        "Converter":[converter],
+        "Report":[report, report_SP],
         "Info":[about_me]
 
     }

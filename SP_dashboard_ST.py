@@ -13,7 +13,7 @@ import os
 import time
 
 
-st.markdown("<h1 style='text-align: center; color: blue;'> TECNO FP ST DASHBOARD </h1>", unsafe_allow_html= True)
+st.markdown("<h1 style='text-align: center; color: blue;'> TECNO SP DASHBOARD FOR ST</h1>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
 st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our feature phone dashboard for Tecno brand DRC. This dashboard is important for following the ST purchase of customers."
@@ -22,9 +22,7 @@ st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our feature
 
 st.markdown("___")
 
-######################################
-## Boutons fermeture et rederamarrage
-#####################################
+# Boutons fermeture et rederamarrage
 ferm, rederm = st.columns(2)
 with ferm:
     # ------------------------------
@@ -71,10 +69,7 @@ with rederm:
             st.session_state.confirm_restart = True
 st.markdown("___")
 
-
-##################
 # Load dataset
-#######
 file = st.file_uploader("📂 Inserer votre fichier Excel en appuyant sur le bouton 'Browse files'", type=["xlsx","xls"])
 
 if file is not None:
@@ -82,7 +77,6 @@ if file is not None:
     #dataset = pd.read_excel(file)
 
     # Traitement des valeurs null
-    #dataset = dataset_full.fillna(0) # Mettre les valeurs null à '0'
     dataset = dataset_full.dropna(subset='Purchased Qty') # Supprimer les valeurs null
 
     # Creation des dates
@@ -105,81 +99,7 @@ if file is not None:
     with st.expander("Filter dates"):
         filter_date = dataframe_explorer(date_frame, case=False)
         st.dataframe(filter_date, use_container_width= True)
-
-    st.markdown("___")
-
-    ##############################################################
-    ## Zone de configuration du modèle (dans le corps principal)
-    ##############################################################
-
-    st.subheader("⚙️ Models configuration")
-
-    # Valeur par defaut des models
-    DEFAULT_MODELS = ["T101", "T353", "T528 New", "T455"]
-    #DEFAULT_MODELS = "T101"
-
-    # Initialise les variables dans la session si non existantes
-    if "selected_models" not in st.session_state:
-        # stocke une liste de 4 modeles
-        st.session_state.selected_models = DEFAULT_MODELS.copy()
-        #st.session_state.selected_models = [DEFAULT_MODELS, DEFAULT_MODELS, DEFAULT_MODELS, DEFAULT_MODELS]
     
-    if "uploaded_df" not in st.session_state:
-        st.session_state.uploaded_df = None
-
-    # Liste de modèles connus
-    list_models = date_frame["Products"].unique().tolist()
-
-    # garder les defaults qui existent dans list_models, compléter avec le premier modèle connu si nécessaire
-    
-    valid_defaults = [m for m in st.session_state.selected_models if m in list_models]
-    while len(valid_defaults) < 4:
-        # ajoute le premier modèle disponible si nécessaire
-        first = list_models[0] if list_models else None
-        if first is None:
-            break
-        valid_defaults.append(first)
-
-    # mettre à jour la session (utile si on a modifié les defaults)
-    st.session_state.selected_models = valid_defaults[:4]
-
-    # Choisir les modèles à analyser 
-    model1, model2, model3, model4 = st.columns(4)
-
-    with model1:
-        model_1 = st.selectbox(
-            "Model 1",
-            options= list_models,
-            index= list_models.index(st.session_state.selected_models[0]) if st.session_state.selected_models[0] in list_models else 0,
-            key= "select_model_1"
-        )
-
-    with model2:
-        model_2 = st.selectbox(
-            "Model 2",
-            options= list_models,
-            index= list_models.index(st.session_state.selected_models[1]) if st.session_state.selected_models[1] in list_models else 0,
-            key= "select_model_2"
-        )
-        
-    with model3:
-        model_3 = st.selectbox(
-            "Model 3",
-            options= list_models,
-            index= list_models.index(st.session_state.selected_models[2]) if st.session_state.selected_models[2] in list_models else 0,
-            key= "select_model_3"
-        )
-             
-    with model4:
-        model_4 = st.selectbox(
-            "Model 4",
-            options= list_models,
-            index= list_models.index(st.session_state.selected_models[3]) if st.session_state.selected_models[3] in list_models else 0,
-            key= "select_model_4"
-        )
-        
-    
-    st.write("Model 1 is :", model_1)
     
     #####################################
     # Creation columns of metric
@@ -213,13 +133,13 @@ if file is not None:
 
     with a1 :
         st.subheader("Graphic Keys models", divider="blue")
-        models = date_frame["Products"].unique()    #["T101", "T353", "T528", "T528 New"]
+        series = date_frame["SERIES"].unique()
         
-        selecte_models = st.multiselect("Selecte your models here", models, default=["T101", "T353", "T528 New"])
-        key_model = date_frame.groupby(["Products","Prices ($)"], as_index= False)["Purchased Qty"].sum()
-        models_filter = key_model[key_model["Products"].isin(selecte_models)]
+        selecte_series = st.multiselect("Selecte your series here", series, default=["SPARK", "CAMON", "POP"])
+        key_series = date_frame.groupby(["SERIES"], as_index= False)["Purchased Qty"].sum()
+        series_filter = key_series[key_series["SERIES"].isin(selecte_series)]
 
-        fig_key = px.bar(models_filter, x="Products", y="Prices ($)", text="Prices ($)", title="Graphic Models and Prices", color="Products")
+        fig_key = px.bar(series_filter, x="SERIES", y="Purchased Qty", text="Purchased Qty", title="Graphic Series and Purchased Qty", color="SERIES")
         st.plotly_chart(fig_key)
 
         #st.markdown("___")
@@ -231,26 +151,25 @@ if file is not None:
     #####   
     # Metric keys models
     with a2 :
-        st.subheader("Keys Modeles", divider="rainbow")
+        st.subheader("Keys Series", divider="rainbow")
         key1,key2 = st.columns(2)
 
-        phase_1 = date_frame[date_frame["Products"]== model_1]
-        key1.metric(label=f"Model {model_1} (Pcs)", value= phase_1["Purchased Qty"].sum(), delta= phase_1["Purchased Qty"].mean()) 
+        Spark = date_frame[date_frame["SERIES"]=="SPARK"]
+        key1.metric(label="Series Spark (Pcs)", value= Spark["Purchased Qty"].sum(), delta=Spark["Purchased Qty"].mean()) 
 
-        phase_2 = date_frame[date_frame["Products"]== model_2]
-        key2.metric(label= f"Model {model_2} (Pcs)", value= phase_2["Purchased Qty"].sum(), delta= phase_2["Purchased Qty"].mean()) 
+        Camon = date_frame[date_frame["SERIES"]=="CAMON"]
+        key2.metric(label="Serie Camon (Pcs)", value= Camon["Purchased Qty"].sum(), delta=Camon["Purchased Qty"].mean()) 
         
 
         key3,key4 = st.columns(2)
+        Pop = date_frame[date_frame["SERIES"]=="POP"]
+        key3.metric(label="Series Pop (Pcs)", value= Pop["Purchased Qty"].sum(), delta=Pop["Purchased Qty"].mean()) 
 
-        phase_3 = date_frame[date_frame["Products"]== model_3]
-        key3.metric(label= f"Model {model_3} (Pcs)", value= phase_3["Purchased Qty"].sum(), delta= phase_3["Purchased Qty"].mean()) 
-
-        phase_4 = date_frame[date_frame["Products"]== model_4]
-        key4.metric(label= f"Model {model_4} (Pcs)", value= phase_4["Purchased Qty"].sum(), delta=phase_4["Purchased Qty"].mean())
+        Phantom = date_frame[date_frame["SERIES"]=="PHANTOM"]
+        key4.metric(label="Series Phantom (Pcs)", value= Phantom["Purchased Qty"].sum(), delta=Phantom["Purchased Qty"].mean())
 
         dataset_kin = date_frame[date_frame["City"]=="KIN"]
-        dataset_Lushi = date_frame[date_frame["City"]=="Lushi"]
+        dataset_Lushi = date_frame[date_frame["City"]=="LUSHI"]
         col11, col12 = st.columns(2)
         col11.metric(label="Kin Purchase(Pcs)", value= dataset_kin["Purchased Qty"].sum(), delta= dataset_kin["Purchased Qty"].mean())
         col12.metric(label="Lushi Purchase(Pcs)", value= dataset_Lushi["Purchased Qty"].sum(), delta= dataset_Lushi["Purchased Qty"].mean())
@@ -266,30 +185,37 @@ if file is not None:
     
     # Situation purchased
     st.subheader("Purchase Situation", divider="rainbow")
-    a3,a4 = st.columns(2)
-
-    with a3 :
-        # Creation d'une liste des models uniques
-        models_data = date_frame["Products"].unique()
-
-        # Creation d'une selecteur multiple
-        selected_models = st.multiselect("Selecte your models", models_data, default=["T101", "T353", "T528 New"])
-
-        # Filtrage des donnees en fonction de la selection
-        date_groupby = date_frame.groupby(["City","Products"], as_index= False)["Purchased Qty"].sum()
-        df_filtered = date_groupby[date_groupby["Products"].isin(selected_models)]
-        
-        fig_area = px.bar(df_filtered, x="City", y="Purchased Qty", text="Purchased Qty", title="Models purchase by region", color="Products", barmode="group")
-        fig_area.update_traces(textposition = 'outside')
-        st.plotly_chart(fig_area)
     
+    # Creation d'une liste des models uniques
+    serie_data = date_frame["SERIES"].unique()
 
-    with a4 :
-        date_groupby = date_frame.groupby(["Products", "Prices ($)"], as_index= False)["Purchased Qty"].sum()
+    # Creation d'un selecteur multiple
+    selected_series = st.multiselect("Selecte your series", serie_data, default=["SPARK", "CAMON", "POP"])
 
-        # Create a histogram
-        fig_hist = px.histogram(date_groupby, x="Prices ($)", title="Distribution models on prices", hover_data=["Purchased Qty"])
-        st.plotly_chart(fig_hist)
+    # Filtrage des donnees en fonction de la selection
+    date_groupby = date_frame.groupby(["City","SERIES"], as_index= False)["Purchased Qty"].sum()
+    df_filtered = date_groupby[date_groupby["SERIES"].isin(selected_series)]
+        
+    fig_area = px.bar(df_filtered, x="City", y="Purchased Qty", text="Purchased Qty", title="Series purchase by region", color="SERIES", barmode="group")
+    fig_area.update_traces(textposition = 'outside')
+    st.plotly_chart(fig_area)
+
+    st.markdown("___")
+
+    # Creation d'une liste des models uniques
+    category_data = date_frame["Categories"].unique()
+
+    # Creation d'une selecteur multiple
+    selected_category = st.multiselect("Selecte your categories", category_data, default=["SPARK 40", "CAMON 40", "POP 10"]) # "SPARK 40", "CAMON 40", "POP 10"
+
+    # Filtrage des donnees en fonction de la selection
+    date_groupby = date_frame.groupby(["City","Categories"], as_index= False)["Purchased Qty"].sum()
+    df_filtered = date_groupby[date_groupby["Categories"].isin(selected_category)]
+        
+    fig_area = px.bar(df_filtered, x="City", y="Purchased Qty", text="Purchased Qty", title="Category purchased by region", color="Categories", barmode="group")
+    fig_area.update_traces(textposition = 'outside')
+    st.plotly_chart(fig_area)
+
 
     #####################
     # Situation Models
@@ -313,7 +239,7 @@ if file is not None:
     models_data_months = date_frame["Products"].unique().tolist()
 
     # Creation d'une selecteur multiple
-    selected_models_months = st.multiselect("Selecte your differents models", models_data_months, default=["T101", "T353", "T528 New"])
+    selected_models_months = st.multiselect("Selecte your differents models", models_data_months, default=["KM5 128+4", "CM5 256+8", "KM4 64+3"])
 
 
     # Filtrage des donnees en fonction de la selection
@@ -381,97 +307,7 @@ if file is not None:
     data_weeks.update_traces(textposition = 'top center')
     st.plotly_chart(data_weeks)
 
-    #############################
-    # Target and Achievement
-    # ####### 
-
-    st.subheader("Target & Achievment", divider="rainbow")
-
-    view_2025 = date_frame[date_frame["Years"] == 2025] # dataset_full
-    target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
-
-    def creer_target_si_un_mois(target_2025):
-        if target_2025["Months"].nunique() == 1:
-            target_2025["Target"] = 16000
-            return target_2025["Target"]
-        
-        elif target_2025["Months"].nunique() == 2:
-            target_2025["Target"] = [16000, 16000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 3:  
-            target_2025["Target"] = [16000, 16000, 16000] # Creation d'une colonne target
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 4:
-            target_2025["Target"] = [16000, 16000, 16000, 17000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 5:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 6:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900] # [16000, 16000, 16000, 17000, 17000, 17000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 7:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300] # [16000, 16000, 16000, 17000, 17000, 17000, 18500]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 8:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 9:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 10:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700, 14700] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 11:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700, 14700, 16100] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000]
-            return target_2025["Target"]
-        elif target_2025["Months"].nunique() == 12:
-            target_2025["Target"] = [16000, 16000, 16000, 17000, 17000, 11900, 13300, 13300, 14700, 14700, 16100, 17500] # [16000, 16000, 16000, 17000, 17000, 17000, 18500, 18500, 19000, 20000, 20000, 20000]
-            return target_2025["Target"]
-        else:
-            return None  # ou gérer autrement si plusieurs mois
-        
-    target = creer_target_si_un_mois(target_2025)
-
-    # Creation graphic combiner (bar and line)
-    #"""
-    fig_cmb = go.Figure()
-
-    #-- Barre pour l'achievment ---
-    fig_cmb.add_trace(go.Bar(
-        x = target_2025["Months"],
-        y = target_2025["Purchased Qty"],
-        name = "Achievment",
-        text = target_2025["Purchased Qty"],
-        textposition= "auto", # il y a 'auto' 'outside' 'inside'
-        marker_color = "skyblue"
-    ))
-
-    #-- Ligne pour le target --
-    fig_cmb.add_trace(go.Scatter(
-        x = target_2025["Months"],
-        y = target,
-        name ="Target (Pcs)",
-        mode = 'lines+text+markers',
-        text = target_2025["Target"],
-        textposition= "top center",
-        line = dict(color = "orange", width = 3)
-    ))
-    #"""
-
-    # Mettre a jour la mise en page
-    #"""
-    fig_cmb.update_layout(
-        title = "Target and Achievment for 2025", 
-        yaxis = dict(title= "Purchase (Pcs)"),
-        yaxis2 = dict(title= "Buy", overlaying = 'y', side = 'right'), 
-        xaxis = dict(title = "Month"),
-        legend = dict(x=0.1, y=1.1, orientation = 'h'), 
-        bargap = 0.8
-    )
-
-    st.plotly_chart(fig_cmb)
-
+    
     ##########################
     # Situation by years
     ####
@@ -539,16 +375,6 @@ if file is not None:
 
     st.plotly_chart(fig_global, use_container_width=True)
 
-    # -------------------------------
-    # 5️⃣ Graphique Matplotlib (optionnel)
-    # -------------------------------
-    #st.write("### 📈 Graphique Matplotlib (optionnel)")
-    #fig, ax = plt.subplots(figsize=(10, 4))
-    #purchases_global.plot(forecast_global, ax=ax)
-    #plt.title("Prévision Globale des ventes Tecno (matplotlib)")
-    #plt.xlabel("Date")
-    #plt.ylabel("Quantité achetée")
-    #st.pyplot(fig)
 
     #############################
     ## 2- Predictions Par Ville
@@ -651,12 +477,47 @@ if file is not None:
 
 
     ##############################
-    ## 3- Predictions Par Modeles
-    st.subheader("3. 📊Models Forecasts")
+    ## 3- Predictions Par Series
+    st.subheader("3. 📊Series Forecasts")
 
     # use dataset
     # Creation d'une selecteur multiple
-    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data, default="T101")
+    #serie_data = date_frame["SERIES"].unique()
+    select_serie_all = st.multiselect("Please can you select your serie here ? (One serie please ! ) : ", serie_data, default="SPARK")
+
+    # Filtrage des donnees en fonction de la selection
+    st_serie_choose_all = dataset[dataset["SERIES"].isin(select_serie_all)]
+    st_serie_all = st_serie_choose_all.groupby("Months")["Purchased Qty"].sum().reset_index()
+    st_serie_all = st_serie_all.rename(columns={"Months": "ds", "Purchased Qty": "y"})
+
+    serie_forecast_all = Prophet()
+    serie_forecast_all.fit(st_serie_all)
+
+    serie_future_all = serie_forecast_all.make_future_dataframe(periods=3, freq='M')
+    forecast_serie_all = serie_forecast_all.predict(serie_future_all)
+
+    st.write(f"📊 Forecast Evolution by {select_serie_all}")
+    fig_serie_preview_all = plot_plotly(serie_forecast_all, forecast_serie_all)
+    fig_serie_preview_all.update_layout(
+        title = "ST purchase series forcast ",
+        xaxis_title = "Months",
+        yaxis_title ="Purchases Quantity by series",
+        template ="plotly_white",
+        
+        plot_bgcolor = bg_color,     #'rgba(240,248,255,1)',  # 🔹 bleu très clair à l'intérieur du graphique
+        paper_bgcolor = paper_color, #'rgba(255,255,255,1)', # 🔹 fond général blanc
+    )
+    st.plotly_chart(fig_serie_preview_all, use_container_width=True)
+
+
+    ##############################
+    ## 4- Predictions Par Model
+    st.subheader("4. 📊Models Forecasts")
+
+    # use dataset
+    # Creation d'une selecteur multiple
+    models_data = date_frame["Products"].unique()
+    select_models_all = st.multiselect("Please can you select your Model here ? (One Model please ! ) : ", models_data, default="KM5 128+4")
 
     # Filtrage des donnees en fonction de la selection
     st_models_choose_all = dataset[dataset["Products"].isin(select_models_all)]
@@ -683,44 +544,6 @@ if file is not None:
     st.plotly_chart(fig_model_preview_all, use_container_width=True)
 
 
-
-    #########################################
-    ###### Price List and Profit ############
-    #########################################
-
-    st.subheader("Price List & Profit", divider="rainbow")
-    
-    # Price List
-    st.subheader("Price List")
-    products = date_frame[["Products", "Prices ($)", "B Price($)", "R Price($)", "A-B Profit($)", "A-R Profit($)", "B-R Profit($)"]].drop_duplicates()
-    st.write(products)
-
-    # Profis
-    c1, c2, c3 = st.columns(3)
-
-    with c1:
-        products_AB = date_frame[["Products", "Prices ($)", "B Price($)", "A-B Profit($)"]].drop_duplicates()
-        barre_AB = px.bar(products, x="Products", y="A-B Profit($)", color="Products", text= "A-B Profit($)", title="Profit of A price on B price")
-        barre_AB.update_traces(textposition = 'outside')
-        st.plotly_chart(barre_AB)
-        
-
-    with c2:
-        products_AR = date_frame[["Products", "Prices ($)", "R Price($)", "A-R Profit($)"]].drop_duplicates()
-        barre_AR = px.bar(products, x="Products", y="A-R Profit($)", color="Products", text= "A-R Profit($)", title="Profit of A price on R price")
-        barre_AR.update_traces(textposition = 'outside')
-        st.plotly_chart(barre_AR)
-
-    with c3:
-        products_BR = date_frame[["Products", "B Price($)", "R Price($)", "B-R Profit($)"]].drop_duplicates()
-        barre_BR = px.bar(products, x="Products", y="B-R Profit($)", color="Products", text= "B-R Profit($)", title="Profit of B price on R price")
-        barre_BR.update_traces(textposition = 'outside')
-        st.plotly_chart(barre_BR)
-
-
     st.markdown("___")
     ## FIN
     st.title("THANKS FOR YOUR ATTENTION !")
-    
-
-    

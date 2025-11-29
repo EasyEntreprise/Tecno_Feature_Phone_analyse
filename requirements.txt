@@ -4,5 +4,4 @@ streamlit
 plotly
 streamlit_extras
 openpyxl
-scipy
 prophet
