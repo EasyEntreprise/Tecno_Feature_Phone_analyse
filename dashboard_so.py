@@ -72,9 +72,11 @@ with rederm:
 
 st.markdown("___")
 
+
+
 # Load dataset
-sale = st.file_uploader("📂 Insert your Excel Sale file by pressing the 'Browse files' button", type=["xlsx","xls"])
-coverage = st.file_uploader("Insert your Excel Inventory file by pressing the 'Browse files' button", type=["xlsx", "xls"])
+sale = st.file_uploader("📂 Insert your Excel Sale file by pressing the 'Browse files' button", type=["xlsx","xls", "csv"])
+coverage = st.file_uploader("Insert your Excel Inventory file by pressing the 'Browse files' button", type=["xlsx", "xls", "csv"])
 
 if sale is not None:
 
@@ -184,7 +186,7 @@ if sale is not None:
 
     with col3:
         shop_sales = date_frame["Shop Name"].nunique()
-        st.metric(label="TOTAL SHOPS WITH SALES", value= shop_sales ) # Les nombres total des shops avec vente
+        st.metric(label="TOTAL SHOPS WITH SALES", value= f"{shop_sales} PCS") # Les nombres total des shops avec vente
 
     with col4:
         shop_cover = couverture_dr["Shop Name"].nunique()
