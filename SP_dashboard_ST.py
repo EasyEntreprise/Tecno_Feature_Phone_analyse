@@ -16,7 +16,7 @@ import time
 st.markdown("<h1 style='text-align: center; color: blue;'> TECNO SP DASHBOARD FOR ST</h1>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
-st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our feature phone dashboard for Tecno brand DRC. This dashboard is important for following the ST purchase of customers."
+st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our Smart Phone dashboard for Tecno brand DRC. This dashboard is important for following the ST purchase of customers."
 "In this "
 "</h6>", unsafe_allow_html= True)
 
@@ -69,12 +69,33 @@ with rederm:
             st.session_state.confirm_restart = True
 st.markdown("___")
 
+
+####################################
+### Fonction de lecture de fichier
+####################################
+
+def read_file(file):
+    """Lit automatiquement Excel ou CSV selon le type du fichier."""
+    if file is None:
+        return None
+    
+    filename = file.name.lower()
+
+    if filename.endswith(".csv"):
+        return pd.read_csv(file)
+    elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+        return pd.read_excel(file)
+    else:
+        st.error("Format not supported. Use Excel. (.xlsx/.xls) ou CSV.")
+        return None
+
 # Load dataset
-file = st.file_uploader("📂 Inserer votre fichier Excel en appuyant sur le bouton 'Browse files'", type=["xlsx","xls"])
+file = st.file_uploader("📂 Inserer votre fichier Excel en appuyant sur le bouton 'Browse files'", type=["xlsx","xls", "csv"])
 
 if file is not None:
-    dataset_full = pd.read_excel(file)
-    #dataset = pd.read_excel(file)
+    
+    #dataset_full = pd.read_excel(file)
+    dataset_full = read_file(file)
 
     # Traitement des valeurs null
     dataset = dataset_full.dropna(subset='Purchased Qty') # Supprimer les valeurs null
@@ -116,9 +137,12 @@ if file is not None:
     #----------------------------------------------------
 
     db = date_frame.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+    mean = date_frame.groupby("Products", as_index= False)["Purchased Qty"].sum()
+    som = mean.sum()
+    nbr = date_frame["Products"].nunique()
 
     col1.metric(label="Sum Purchase(Pcs)", value= date_frame["Purchased Qty"].sum(), delta="General Purchase(Pcs)")
-    col2.metric(label="General Average(Pcs)", value= date_frame["Purchased Qty"].mean(), delta="General Average(Pcs)")
+    col2.metric(label="General Average(Pcs)", value= som["Purchased Qty"]/nbr, delta="General Average(Pcs)")
     col3.metric(label="High Price($)", value= date_frame["Prices ($)"].max(), delta = converter_high_price)
     col4.metric(label="Low Price($)", value= date_frame["Prices ($)"].min(), delta = converter_low_price)
 
@@ -206,7 +230,7 @@ if file is not None:
     category_data = date_frame["Categories"].unique()
 
     # Creation d'une selecteur multiple
-    selected_category = st.multiselect("Selecte your categories", category_data, default=["SPARK 40", "CAMON 40", "POP 10"]) # "SPARK 40", "CAMON 40", "POP 10"
+    selected_category = st.multiselect("Selecte your categories", category_data) # "SPARK 40", "CAMON 40", "POP 10"
 
     # Filtrage des donnees en fonction de la selection
     date_groupby = date_frame.groupby(["City","Categories"], as_index= False)["Purchased Qty"].sum()
@@ -239,7 +263,7 @@ if file is not None:
     models_data_months = date_frame["Products"].unique().tolist()
 
     # Creation d'une selecteur multiple
-    selected_models_months = st.multiselect("Selecte your differents models", models_data_months, default=["KM5 128+4", "CM5 256+8", "KM4 64+3"])
+    selected_models_months = st.multiselect("Selecte your differents models", models_data_months)
 
 
     # Filtrage des donnees en fonction de la selection
@@ -517,7 +541,7 @@ if file is not None:
     # use dataset
     # Creation d'une selecteur multiple
     models_data = date_frame["Products"].unique()
-    select_models_all = st.multiselect("Please can you select your Model here ? (One Model please ! ) : ", models_data, default="KM5 128+4")
+    select_models_all = st.multiselect("Please can you select your Model here ? (One Model please ! ) : ", models_data)
 
     # Filtrage des donnees en fonction de la selection
     st_models_choose_all = dataset[dataset["Products"].isin(select_models_all)]
