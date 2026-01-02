@@ -69,13 +69,33 @@ with rederm:
 
 st.markdown("___")
 
+####################################
+### Fonction de lecture de fichier
+####################################
+
+def read_file(file):
+    """Lit automatiquement Excel ou CSV selon le type du fichier."""
+    if file is None:
+        return None
+    
+    filename = file.name.lower()
+
+    if filename.endswith(".csv"):
+        return pd.read_csv(file)
+    elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+        return pd.read_excel(file)
+    else:
+        st.error("Format not supported. Use Excel. (.xlsx/.xls) ou CSV.")
+        return None
+
 ########################
 # Load dataset
 ###
-file = st.file_uploader("📂 Insert your Excel file by pressing the 'Browse files' button", type=["xlsx","xls"])
+file = st.file_uploader("📂 Insert your Excel file by pressing the 'Browse files' button", type=["xlsx","xls", "csv"])
 
 if file is not None:
-    dataset_full = pd.read_excel(file)
+    #dataset_full = pd.read_excel(file)
+    dataset_full = read_file(file)
 
     # Traitement des valeurs null
     dataset = dataset_full.dropna(subset=['Purchases Qty (Pcs)']) # Mettre les valeurs null à '0'
@@ -155,11 +175,6 @@ if file is not None:
         BigE = st.metric(label="SD to Big-Equator", value= bequator, delta=client_be["Customers Name"])
 
 
-        # Style the metric
-        style_metric_cards(background_color="#3c4d66", border_left_color="#99f2c8", border_color="#0006a")
-        
-        
-
     with col3 :
         st.subheader("Business Situation", divider="rainbow")
         a1, a2, a3 = st.columns(3) # Creating columns for (total customers, total purchase and total investiment)
@@ -192,6 +207,83 @@ if file is not None:
         fig_pie = go.Figure(data=[go.Pie(labels= achat_year["Cities"], values= achat_year["Purchases Qty (Pcs)"], title="Proportion des données par City", opacity= 0.5)])
         fig_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_pie)
+
+    # Style the metric
+    style_metric_cards(background_color="#3c4d66", border_left_color="#99f2c8", border_color="#0006a")
+        
+    ####################
+    ## Sub-dealer evolution by years
+
+    st.subheader("Sub-dealer Evolution by Years", divider="rainbow")
+    # Create a DataFrame for sub-dealer evolution by years
+    sub_dealer_evolution = dataset.groupby("Years", as_index= False)["Customers Name"].nunique()
+
+    fig_sd_evolution = px.line(sub_dealer_evolution, x="Years", y="Customers Name", text="Customers Name", title="Evolution of Sub-dealers by Years")
+    fig_sd_evolution.update_traces(textposition = 'top center')
+    st.plotly_chart(fig_sd_evolution)
+
+    #######################
+    #### Market
+    #############
+    st.subheader("Markets Situation", divider="rainbow")
+
+    region_id =  date_frame["Cities"].unique()
+
+    all_city = ["All Regions"] + sorted(date_frame["Cities"].dropna().unique().tolist())
+    selected_city = st.selectbox("Select your region here", all_city )
+    #dataset_cities = date_frame[date_frame["Cities"] == selected_city]
+
+    if selected_city == "All Regions":
+        dataset_cities = date_frame
+
+    else :
+        dataset_cities = date_frame[date_frame["Cities"] == selected_city]
+    
+    market = dataset_cities.groupby("Market", as_index= False)["Purchases Qty (Pcs)"].sum()
+
+    colx1, colx2 = st.columns(2)
+
+    with colx1:
+        fig_market = px.bar(market, x="Market", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchase by market in {selected_city}", color="Market")
+        fig_market.update_traces(textposition = 'outside')
+        st.plotly_chart(fig_market)
+
+    with colx2:
+        fig_market_pie = go.Figure(data=[go.Pie(labels= market["Market"], values= market["Purchases Qty (Pcs)"], title=f"Proportion of purchases by market in {selected_city}", opacity= 0.5)])
+        fig_market_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
+        st.plotly_chart(fig_market_pie)
+
+    ###########################
+    #### Sub-dealer by Market
+    #############
+    st.subheader("Sub-dealers by Markets Situation", divider="rainbow")
+
+    market_id =  date_frame["Market"].unique()
+
+    all_markets = ["All Markets"] + sorted(date_frame["Market"].dropna().unique().tolist())
+    selected_markets = st.selectbox("Select your Market here", all_markets)
+    #dataset_market = date_frame[date_frame["Market"] == selected_markets]
+
+    if selected_markets == "All Markets":
+        dataset_market = date_frame
+
+    else :
+        dataset_market = date_frame[date_frame["Market"] == selected_markets]
+
+    market_sd = dataset_market.groupby("Customers Name", as_index= False)["Purchases Qty (Pcs)"].sum()
+
+    colz1, colz2 = st.columns(2)
+
+    with colz1:
+        fig_market_sd = px.bar(market_sd, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchase by market in {selected_city}", color="Customers Name")
+        fig_market_sd.update_traces(textposition = 'outside')
+        st.plotly_chart(fig_market_sd)
+
+    with colz2:
+        fig_market_sd_pie = go.Figure(data=[go.Pie(labels= market_sd["Customers Name"], values= market_sd["Purchases Qty (Pcs)"], title=f"Sub-dealers' Proportion purchases by market in {selected_markets}", opacity= 0.5)])
+        fig_market_sd_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
+        st.plotly_chart(fig_market_sd_pie)
+
 
     ###############################
     # Situation annuel des achats
@@ -235,7 +327,7 @@ if file is not None:
     models_data = date_frame["Products"].unique()
 
     # Creation d'une selecteur multiple
-    selected_models = st.multiselect("Select your models", models_data, default=["T101", "T455", "T528 New"])
+    selected_models = st.multiselect("Select your models", models_data)
 
 
     # Filtrage des donnees en fonction de la selection
@@ -294,7 +386,7 @@ if file is not None:
             target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200, 9500, 9970]
             return target_2025["Target"]
         elif target_2025["Date"].nunique() == 12:
-            target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200, 9500, 9970, 11375]
+            target_2025["Target"] = [9600, 9600, 9600, 8330, 9335, 9520, 9110, 9175, 9200, 9500, 9970, 9900]
             return target_2025["Target"]
         else:
             return None  # ou gérer autrement si plusieurs mois
@@ -402,7 +494,7 @@ if file is not None:
     st.subheader("2. 📊Models Forecasts")
 
     # Creation d'une selecteur multiple
-    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data, default="T101")
+    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data)
 
     # Filtrage des donnees en fonction de la selection
     sd_models_choose_all = dataset[dataset["Products"].isin(select_models_all)]
@@ -625,7 +717,7 @@ if file is not None:
     st.write("2- Models Forecast")
 
     # Creation d'une selecteur multiple
-    select_models = st.multiselect("Select your model here (One model please ! ) :", models_data, default="T101")
+    select_models = st.multiselect("Select your model here (One model please ! ) :", models_data)
 
     # Filtrage des donnees en fonction de la selection
     sd_models_choose = region_predict[region_predict["Products"].isin(select_models)]
