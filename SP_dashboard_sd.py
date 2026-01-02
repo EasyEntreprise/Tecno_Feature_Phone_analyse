@@ -12,10 +12,10 @@ import os
 import time
 
 
-st.markdown("<h1 style='text-align: center; color: blue;'> TECNO FP SUB-DEALERS DASHBOARD </h1>", unsafe_allow_html= True)
+st.markdown("<h1 style='text-align: center; color: blue;'> TECNO SP SUB-DEALERS DASHBOARD </h1>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
-st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our SD purchases Dashboard for Tecno DRC feature phone. This dashboard is important for following the purchase of A sub-dealers."
+st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our SD purchases Dashboard for Tecno DRC Smart Phone. This dashboard is important for following the purchase of A sub-dealers."
 " "
 "</h6>", unsafe_allow_html= True)
 
@@ -69,13 +69,39 @@ with rederm:
 
 st.markdown("___")
 
+####################################
+### Fonction de lecture de fichier
+####################################
+
+def read_file(file):
+    """Lit automatiquement Excel ou CSV selon le type du fichier."""
+    if file is None:
+        return None
+    
+    filename = file.name.lower()
+
+    if filename.endswith(".csv"):
+        return pd.read_csv(file)
+    elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+        return pd.read_excel(file)
+    else:
+        st.error("Format not supported. Use Excel. (.xlsx/.xls) ou CSV.")
+        return None
+
 ########################
 # Load dataset
 ###
-file = st.file_uploader("Insert your Excel file by pressing the 'Browse files' button", type=["xlsx","xls"])
+file = st.file_uploader("Insert your Excel file by pressing the 'Browse files' button", type=["xlsx","xls", "csv"])
 
 if file is not None:
-    dataset_full = pd.read_excel(file)
+    
+    #dataset_full = pd.read_excel(file)
+    dataset_full = read_file(file)
+    
+    dataset_full["Purchases Qty (Pcs)"] = pd.to_numeric(
+    dataset_full["Purchases Qty (Pcs)"], 
+    errors="coerce"
+    )
 
     # Traitement des valeurs null
     dataset = dataset_full.dropna(subset=['Purchases Qty (Pcs)']) # Mettre les valeurs null à '0'
@@ -126,10 +152,10 @@ if file is not None:
         
         #-------------Recuperer Nbr client par region ----------
         kin_sd = date_frame[date_frame["Cities"]== "KINSHASA"] # Filtrer la dataset en Kinshasa comme Cities
-        kat_sd = date_frame[date_frame["Cities"]== "KATANGA"]
-        kc_sd  = date_frame[date_frame["Cities"]== "KONGO CENTRAL"]
-        bk_sd  = date_frame[date_frame["Cities"]== "BIG KASAI"]
-        be_sd  = date_frame[date_frame["Cities"]== "BIG EQUATOR"]
+        kat_sd = date_frame[date_frame["Cities"]== "BIG-KATANGA"]
+        kc_sd  = date_frame[date_frame["Cities"]== "KONGO-CENTRAL"]
+        bk_sd  = date_frame[date_frame["Cities"]== "BIG-KASAI"]
+        be_sd  = date_frame[date_frame["Cities"]== "BIG-EQUATOR"]
 
 
         kinshasa = kin_sd["Customers Name"].nunique() # Recuperer le nombre des clients
@@ -193,6 +219,80 @@ if file is not None:
         fig_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_pie)
 
+    ####################
+    ## Sub-dealer evolution by years
+
+    st.subheader("Sub-dealer Evolution by Years", divider="rainbow")
+    # Create a DataFrame for sub-dealer evolution by years
+    sub_dealer_evolution = dataset.groupby("Years", as_index= False)["Customers Name"].nunique()
+
+    fig_sd_evolution = px.line(sub_dealer_evolution, x="Years", y="Customers Name", text="Customers Name", title="Evolution of Sub-dealers by Years")
+    fig_sd_evolution.update_traces(textposition = 'top center')
+    st.plotly_chart(fig_sd_evolution)
+
+    #######################
+    #### Market
+    #############
+    st.subheader("Markets Situation", divider="rainbow")
+
+    region_id =  date_frame["Cities"].unique()
+
+    all_city = ["All Regions"] + sorted(date_frame["Cities"].dropna().unique().tolist())
+    selected_city = st.selectbox("Select your region here", all_city)
+    #dataset_cities = date_frame[date_frame["Cities"] == selected_city]
+
+    if selected_city == "All Regions":
+        dataset_cities = date_frame
+
+    else :
+        dataset_cities = date_frame[date_frame["Cities"] == selected_city]
+    
+    market = dataset_cities.groupby("Market", as_index= False)["Purchases Qty (Pcs)"].sum()
+
+    colx1, colx2 = st.columns(2)
+
+    with colx1:
+        fig_market = px.bar(market, x="Market", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchase by market in {selected_city}", color="Market")
+        fig_market.update_traces(textposition = 'outside')
+        st.plotly_chart(fig_market)
+
+    with colx2:
+        fig_market_pie = go.Figure(data=[go.Pie(labels= market["Market"], values= market["Purchases Qty (Pcs)"], title=f"Proportion of purchases by market in {selected_city}", opacity= 0.5)])
+        fig_market_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
+        st.plotly_chart(fig_market_pie)
+
+    ###########################
+    #### Sub-dealer by Market
+    #############
+    st.subheader("Sub-dealers by Markets Situation", divider="rainbow")
+
+    market_id =  date_frame["Market"].unique()
+
+    all_markets = ["All Markets"] + sorted(date_frame["Market"].dropna().unique().tolist())
+    selected_markets = st.selectbox("Select your Market here", all_markets)
+
+    if selected_markets == "All Markets":
+        dataset_market = date_frame
+
+    else :
+        dataset_market = date_frame[date_frame["Market"] == selected_markets]
+        
+    #dataset_market = date_frame[date_frame["Market"] == selected_markets]
+    market_sd = dataset_market.groupby("Customers Name", as_index= False)["Purchases Qty (Pcs)"].sum()
+
+    colz1, colz2 = st.columns(2)
+
+    with colz1:
+        fig_market_sd = px.bar(market_sd, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchase by market in {selected_city}", color="Customers Name")
+        fig_market_sd.update_traces(textposition = 'outside')
+        st.plotly_chart(fig_market_sd)
+
+    with colz2:
+        fig_market_sd_pie = go.Figure(data=[go.Pie(labels= market_sd["Customers Name"], values= market_sd["Purchases Qty (Pcs)"], title=f"Sub-dealers' Proportion purchases by market in {selected_markets}", opacity= 0.5)])
+        fig_market_sd_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
+        st.plotly_chart(fig_market_sd_pie)
+
+
     ###############################
     # Situation annuel des achats
     ####
@@ -200,7 +300,7 @@ if file is not None:
     b1, b2 = st.columns([2, 3])
 
     with b1:
-        achat_year = dataset_full.groupby("Years", as_index= False)["Purchases Qty (Pcs)"].sum()
+        achat_year = dataset.groupby("Years", as_index= False)["Purchases Qty (Pcs)"].sum()
         fig_years = px.line(achat_year, x="Years", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Total Purchase by Years")
         fig_years.update_traces(textposition = 'top center')
         st.plotly_chart(fig_years)
@@ -221,13 +321,13 @@ if file is not None:
 
     with c1:
         achat_models = dataset_full.groupby(["SERIES", "Years"], as_index= False)["Purchases Qty (Pcs)"].sum()
-        fig_models = px.bar(achat_models, x="Years", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Purchase by models (Years)", color="Products")
+        fig_models = px.bar(achat_models, x="Years", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Purchase by models (Years)", color="SERIES", barmode='group')
         st.plotly_chart(fig_models)
         
 
     with c2:
         models_month = date_frame.groupby(["SERIES", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
-        fig_modelx = px.bar(models_month, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Purchase by models(Months)", color="Products")
+        fig_modelx = px.bar(models_month, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Purchase by models(Months)", color="SERIES", barmode='group')
         st.plotly_chart(fig_modelx)
 
     
@@ -235,7 +335,7 @@ if file is not None:
     models_data = date_frame["Products"].unique()
 
     # Creation d'une selecteur multiple
-    selected_models = st.multiselect("Select your models", models_data, default=["KM5 128+4", "KM4 64+3", "CM5 256+8"])
+    selected_models = st.multiselect("Select your models", models_data)
 
 
     # Filtrage des donnees en fonction de la selection
@@ -309,22 +409,23 @@ if file is not None:
     st.subheader("2. 📊Models Forecasts")
 
     # Creation d'une selecteur multiple
-    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data, default="KM5 128+4")
+    series_data = date_frame["SERIES"].unique()
+    select_series_all = st.selectbox("Please can you select your series here ? (One model please ! ) : ", series_data)
 
     # Filtrage des donnees en fonction de la selection
-    sd_models_choose_all = dataset[dataset["Products"].isin(select_models_all)]
-    sd_models_all = sd_models_choose_all.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
-    sd_models_all = sd_models_all.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
+    sd_series_choose_all = dataset[dataset["SERIES"] == select_series_all]
+    sd_series_all = sd_series_choose_all.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
+    sd_series_all = sd_series_all.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
 
-    model_forecast_all = Prophet()
-    model_forecast_all.fit(sd_models_all)
+    series_forecast_all = Prophet()
+    series_forecast_all.fit(sd_series_all)
 
-    model_future_all = model_forecast_all.make_future_dataframe(periods=3, freq='M')
-    forecast_model_all = model_forecast_all.predict(model_future_all)
+    series_future_all = series_forecast_all.make_future_dataframe(periods=3, freq='M')
+    forecast_series_all = series_forecast_all.predict(series_future_all)
 
-    st.write(f"📊 Forecast Evolution by {select_models_all}")
-    fig_model_preview_all = plot_plotly(model_forecast_all, forecast_model_all)
-    fig_model_preview_all.update_layout(
+    st.write(f"📊 Forecast Evolution by {select_series_all}")
+    fig_series_preview_all = plot_plotly(series_forecast_all, forecast_series_all)
+    fig_series_preview_all.update_layout(
         title = "Clients purchase model forcast ",
         xaxis_title = "Months",
         yaxis_title ="Purchases Quantity by model",
@@ -333,7 +434,7 @@ if file is not None:
         plot_bgcolor = bg_color,     #'rgba(240,248,255,1)',  # 🔹 bleu très clair à l'intérieur du graphique
         paper_bgcolor = paper_color, #'rgba(255,255,255,1)', # 🔹 fond général blanc
     )
-    st.plotly_chart(fig_model_preview_all, use_container_width=True)
+    st.plotly_chart(fig_series_preview_all, use_container_width=True)
 
 
     #############################
@@ -449,13 +550,13 @@ if file is not None:
     total_buy = region_sd.groupby("Customers Name", as_index= False)["Purchases Qty (Pcs)"].sum() # Total achat du client selectionner 
     total_inv = region_sd.groupby("Customers Name", as_index= False)["Investments ($)"].sum() # Total achat du client invest
 
-    region_predict = dataset[dataset["Customers Name"]==select_sd] # Recuperer la region du client selectionner
+    region_predict = dataset[dataset["Customers Name"] == select_sd] # Recuperer la region du client selectionner
 
     nbr_line = region_predict["Months"].unique() 
 
     col6, col7, col8 = st.columns(3)
-
-    col6.metric(label="SD NAME", value=select_sd, delta=str(region_sd["Cities"].unique()))
+    
+    col6.metric(label="SD NAME", value= select_sd, delta=str(region_sd["Cities"].unique()))
     col7.metric(label="Total Purchase (Pcs)", value=int(total_buy["Purchases Qty (Pcs)"]), delta=int(total_buy["Purchases Qty (Pcs)"])/int(nbr_line.shape[0]))
     col8.metric(label="Total Invest ($)", value=int(total_inv["Investments ($)"]), delta=int(total_inv["Investments ($)"])/int(nbr_line.shape[0]))
 
@@ -500,6 +601,7 @@ if file is not None:
     st.title(f"Purchase Forecasts for customer : {select_sd}")
 
     st.write("1- Monthly FORECAST")
+    
     predict_sd_mensuel = region_predict.groupby(["Date"], as_index = False)["Purchases Qty (Pcs)"].sum()
     sd_predictionMensuel = predict_sd_mensuel.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})
     
@@ -529,23 +631,27 @@ if file is not None:
     st.plotly_chart(month_sd_forcast, use_container_width=True)
     
 
-    st.write("2- Models Forecast")
+    st.write("2- SERIES Forecast")
 
-    # Creation d'une selecteur multiple
-    select_models = st.multiselect("Select your model here (One model please ! ) :", models_data, default="KM5 128+4")
+    # Creation d'une selecteur
+    
+    select_series = st.selectbox("Select your series here (One model please ! ) :", series_data)
 
     # Filtrage des donnees en fonction de la selection
-    sd_models_choose = region_predict[region_predict["Products"].isin(select_models)]
-    sd_models = sd_models_choose.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
-    sd_models = sd_models.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
+    sd_series_choose = region_predict[region_predict["SERIES"] == select_series]
+
+    # Agrégation par date
+    sd_series = sd_series_choose.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
+    
+    sd_series = sd_series.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
 
     model_forecast = Prophet()
-    model_forecast.fit(sd_models)
+    model_forecast.fit(sd_series)
 
     model_future = model_forecast.make_future_dataframe(periods=3, freq='M')
     forecast_model = model_forecast.predict(model_future)
 
-    st.subheader(f"📊 Forecast Evolution by {select_models}")
+    st.subheader(f"📊 Forecast Evolution by {select_series}")
     fig_model_preview = plot_plotly(model_forecast, forecast_model)
     fig_model_preview.update_layout(
         title = "Clients purchase model forcast ",
