@@ -71,6 +71,25 @@ with rederm:
             st.session_state.confirm_restart = True
 st.markdown("___")
 
+####################################
+### Fonction de lecture de fichier
+####################################
+
+def read_file(file):
+    """Lit automatiquement Excel ou CSV selon le type du fichier."""
+    if file is None:
+        return None
+    
+    filename = file.name.lower()
+
+    if filename.endswith(".csv"):
+        return pd.read_csv(file)
+    elif filename.endswith(".xlsx") or filename.endswith(".xls"):
+        return pd.read_excel(file)
+    else:
+        st.error("Format not supported. Use Excel. (.xlsx/.xls) ou CSV.")
+        return None
+
 
 ##################
 # Load dataset
@@ -78,8 +97,10 @@ st.markdown("___")
 file = st.file_uploader("📂 Inserer votre fichier Excel en appuyant sur le bouton 'Browse files'", type=["xlsx","xls"])
 
 if file is not None:
-    dataset_full = pd.read_excel(file)
-    #dataset = pd.read_excel(file)
+    
+    #dataset_full = pd.read_excel(file)
+    dataset_full = read_file(file)
+    
 
     # Traitement des valeurs null
     #dataset = dataset_full.fillna(0) # Mettre les valeurs null à '0'
@@ -197,8 +218,12 @@ if file is not None:
 
     db = date_frame.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
 
+    mean = date_frame.groupby("Products", as_index= False)["Purchased Qty"].sum()
+    som = mean.sum()
+    nbr = date_frame["Products"].nunique()
+
     col1.metric(label="Sum Purchase(Pcs)", value= date_frame["Purchased Qty"].sum(), delta="General Purchase(Pcs)")
-    col2.metric(label="General Average(Pcs)", value= date_frame["Purchased Qty"].mean(), delta="General Average(Pcs)")
+    col2.metric(label="General Average(Pcs)", value= som["Purchased Qty"]/nbr, delta="General Average(Pcs)")
     col3.metric(label="High Price($)", value= date_frame["Prices ($)"].max(), delta = converter_high_price)
     col4.metric(label="Low Price($)", value= date_frame["Prices ($)"].min(), delta = converter_low_price)
 
@@ -209,13 +234,14 @@ if file is not None:
     col6.metric(label="Bad week (Pcs)", value=db["Purchased Qty"].min(), delta= dbmin["Weeks"]) # Afficher le metric de la semaine avec moins d'achats
 
 
+
     a1, a2 = st.columns(2)
 
     with a1 :
         st.subheader("Graphic Keys models", divider="blue")
         models = date_frame["Products"].unique()    #["T101", "T353", "T528", "T528 New"]
         
-        selecte_models = st.multiselect("Selecte your models here", models, default=["T101", "T353", "T528 New"])
+        selecte_models = st.multiselect("Selecte your models here", models)
         key_model = date_frame.groupby(["Products","Prices ($)"], as_index= False)["Purchased Qty"].sum()
         models_filter = key_model[key_model["Products"].isin(selecte_models)]
 
@@ -273,7 +299,7 @@ if file is not None:
         models_data = date_frame["Products"].unique()
 
         # Creation d'une selecteur multiple
-        selected_models = st.multiselect("Selecte your models", models_data, default=["T101", "T353", "T528 New"])
+        selected_models = st.multiselect("Selecte your models", models_data)
 
         # Filtrage des donnees en fonction de la selection
         date_groupby = date_frame.groupby(["City","Products"], as_index= False)["Purchased Qty"].sum()
@@ -313,7 +339,7 @@ if file is not None:
     models_data_months = date_frame["Products"].unique().tolist()
 
     # Creation d'une selecteur multiple
-    selected_models_months = st.multiselect("Selecte your differents models", models_data_months, default=["T101", "T353", "T528 New"])
+    selected_models_months = st.multiselect("Selecte your differents models", models_data_months)
 
 
     # Filtrage des donnees en fonction de la selection
@@ -656,7 +682,7 @@ if file is not None:
 
     # use dataset
     # Creation d'une selecteur multiple
-    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data, default="T101")
+    select_models_all = st.multiselect("Please can you select your model here ? (One model please ! ) : ", models_data)
 
     # Filtrage des donnees en fonction de la selection
     st_models_choose_all = dataset[dataset["Products"].isin(select_models_all)]
