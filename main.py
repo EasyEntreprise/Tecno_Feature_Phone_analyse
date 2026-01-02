@@ -14,7 +14,7 @@ from prophet.plot import plot_plotly, plot_components_plotly
 
 # Config page
 st.set_page_config(
-    page_title="Tecno FP Business", 
+    page_title="Tecno Business Analytics", 
     layout="wide", 
     page_icon=":material/bar_chart:"
 )
@@ -54,13 +54,8 @@ dashboard5 = st.Page(
     icon=":material/bar_chart:",
 )
 
-dashboard6 = st.Page(
-    page = "SP_dashboard_so.py",
-    title = "SO DashBoard for SP",
-    icon = ":material/bar_chart:"
-)
 
-dashboard7 = st.Page(
+dashboard6 = st.Page(
     page = "dashboard_retail.py",
     title = "TECNO RETAIL BUSINESS",
     icon = ":material/bar_chart:"
@@ -68,15 +63,10 @@ dashboard7 = st.Page(
 
 report = st.Page(
     page = "report.py",
-    title = "TECNO FP REPORT",
+    title = "TECNO BUSINESS REPORT",
     icon = ":material/bar_chart:"
 )
 
-report_SP = st.Page(
-    page = "SP_report.py",
-    title = "TECNO SP REPORT",
-    icon = ":material/bar_chart:"
-)
 
 
 about_me = st.Page(
@@ -102,11 +92,11 @@ fusion_file = st.Page(
 page = st.navigation(
     {
         "Dashboard FP":[dashboard, dashboard2, dashboard3],
-        "Dashboard SP":[dashboard4, dashboard5, dashboard6],
-        "Retail Dashboard":[dashboard7],
+        "Dashboard SP":[dashboard4, dashboard5],
+        "Retail Dashboard":[dashboard6],
         "Fusion Excel to CSV":[fusion_file],
         "Converter":[converter],
-        "Report":[report, report_SP],
+        "Report":[report],
         "Info":[about_me]
 
     }
