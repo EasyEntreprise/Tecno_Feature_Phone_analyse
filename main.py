@@ -24,14 +24,15 @@ st.set_page_config(
 about_me = st.Page(
     page = "about_me.py",
     title = "About Me",
-    icon = ":material/account_circle:" 
+    icon = ":material/account_circle:",
+    default= True
 )
 
 dashboard = st.Page(
     page="dashboard.py",
     title="ST DashBoard for FP",
-    icon=":material/bar_chart:",
-    default= True
+    icon=":material/bar_chart:"
+    
 )
 
 
