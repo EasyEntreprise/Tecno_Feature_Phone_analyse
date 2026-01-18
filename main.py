@@ -21,6 +21,12 @@ st.set_page_config(
 
 # Page Setup
 
+about_me = st.Page(
+    page = "about_me.py",
+    title = "About Me",
+    icon = ":material/account_circle:" 
+)
+
 dashboard = st.Page(
     page="dashboard.py",
     title="ST DashBoard for FP",
@@ -67,14 +73,6 @@ report = st.Page(
     icon = ":material/bar_chart:"
 )
 
-
-
-about_me = st.Page(
-    page = "about_me.py",
-    title = "About Me",
-    icon = ":material/account_circle:" 
-)
-
 converter = st.Page(
     page = "csv converter.py",
     title = "Excel to CSV Converter",
@@ -84,8 +82,7 @@ converter = st.Page(
 fusion_file = st.Page(
     page= "fusion_excel_to_csv.py",
     title= "Combine multiple Excel files",
-    icon= ""
-
+    icon= ":material/file_download:"
 )
 
 # Navigation betwen pages
