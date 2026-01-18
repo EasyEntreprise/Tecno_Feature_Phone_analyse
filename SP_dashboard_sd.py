@@ -346,6 +346,34 @@ if file is not None:
     fig_select.update_traces(textposition = 'top center')
     st.plotly_chart(fig_select)
 
+    # Sélecteur de modèle (SEUL filtre demandé)
+    
+    modele_choisi = st.selectbox(
+        "Choisir le modèle",
+        sorted(date_frame["Products"].unique())
+    )
+
+    df_models = date_frame[date_frame["Products"] == modele_choisi]
+
+    # Agrégation
+    df_group = (
+        df_models.groupby(["Customers Name", "Products", "Date"], as_index=False)
+        ["Purchases Qty (Pcs)"]
+        .sum()
+    )
+
+    # Pivot mois en colonnes
+    tableau = df_group.pivot_table(
+        index=["Customers Name", "Products"],
+        columns="Date",
+        values="Purchases Qty (Pcs)"
+    )
+
+    tableau = tableau.reset_index()
+
+    # Affichage final
+    st.subheader(f"Monthly quantity by Modèle : {modele_choisi}")
+    st.dataframe(tableau, use_container_width=True)
 
 
     ##############################
@@ -585,16 +613,30 @@ if file is not None:
         
     # Graphic achat mensuel du client selectionner
     achat_mensuel_sd = region_sd.groupby(["Customers Name", "Date"], as_index = False)["Purchases Qty (Pcs)"].sum()
+    
     fig_sd = px.line(achat_mensuel_sd, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchases Sub-dealers {select_sd} by months")
     fig_sd.update_traces(textposition = 'top center')
+    
     st.plotly_chart(fig_sd)
     st.markdown("___")
 
-    # Graphic achat mensuel du client selectionner par models
+    # Graphic achat mensuel du client par models
         
     fig_sd_models = px.bar(achat_models_sd, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title=f"Purchases of  Sub-dealers {select_sd} by models", color="Products")
     fig_sd_models.update_traces(textposition = 'outside')
     st.plotly_chart(fig_sd_models)
+
+    # Graphic achat mensuel du client selectionner par models
+
+    models = region_sd["Products"].unique()
+    sd_select = st.multiselect("Select models", models)
+    
+    sd = region_sd.groupby(["Products", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
+    sd_filtered = sd[sd["Products"].isin(sd_select)]
+    
+    fig_sd_models_line = px.line(sd_filtered, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Evolutions purchase models by months")
+    fig_sd_models_line.update_traces(textposition = 'top center')
+    st.plotly_chart(fig_sd_models_line)
 
     ######
     # Prediction client
