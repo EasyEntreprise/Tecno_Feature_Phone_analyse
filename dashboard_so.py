@@ -13,10 +13,10 @@ import os
 import time
 
 
-st.markdown("<h1 style='text-align: center; color: blue;'> TECNO FP SO DASHBOARD </h1>", unsafe_allow_html= True)
+st.markdown("<h1 style='text-align: center; color: blue;'> TECNO SO DASHBOARD </h1>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
 st.markdown("<br/>", unsafe_allow_html= True)
-st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our feature phone dashboard for Tecno brand DRC. This dashboard is important for following the ST purchase of customers."
+st.markdown("<h6 style='text-align: center; color: red;'> Welcome in our Sales Out dashboard for Tecno brand DRC. This dashboard is important for following the ST purchase of customers."
 "In this "
 "</h6>", unsafe_allow_html= True)
 
