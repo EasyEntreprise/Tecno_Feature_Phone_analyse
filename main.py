@@ -91,13 +91,13 @@ fusion_file = st.Page(
 # Navigation betwen pages
 page = st.navigation(
     {
+        "Info":[about_me],
         "Dashboard FP":[dashboard, dashboard2, dashboard3],
         "Dashboard SP":[dashboard4, dashboard5],
         "Retail Dashboard":[dashboard6],
         "Fusion Excel to CSV":[fusion_file],
         "Converter":[converter],
-        "Report":[report],
-        "Info":[about_me]
+        "Report":[report]
 
     }
     
