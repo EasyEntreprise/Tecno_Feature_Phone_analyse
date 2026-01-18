@@ -126,21 +126,28 @@ if sale is not None:
     couverture_dr = couverture_drop.rename(columns={"Sales Region 2":"Sales Region", "State":"Region", "City":"Market"}) # Renomer la colonne 'Sales Region'
     
     # Convertir en datetime
-    achat["Sales Date"] = pd.to_datetime(achat["Sales Date"], errors="coerce") # Mettre la colonne 'Sales Date' en format date
-    clients["Monthly"] = pd.to_datetime(clients["Monthly"], errors="coerce") # Mettre la colonne 'Sales Date' en format date
+    achat["Months"] = pd.to_datetime(achat["Months"], errors="coerce") # Mettre la colonne 'Months' en format date
+    clients["Monthly"] = pd.to_datetime(clients["Monthly"], errors="coerce") # Mettre la colonne 'Months' en format date
     
     
     # Renommer les elements des colonnes
   
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Haut- Katanga", "BIG KATANGA", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Big Katanga", "BIG KATANGA", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Lualaba", "BIG KATANGA", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kasai", "BIG KASAI", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Big Kasai", "BIG KASAI", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kasai Centrale", "BIG KASAI", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kasai Orientale", "BIG KASAI", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kwilu", "BIG EQUATOR", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Idiof", "BIG EQUATOR", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kisangani", "BIG EQUATOR", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Sud-Ubangi", "BIG EQUATOR", couverture_dr["Region"])
-    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kongo Centrale", "KONGO CENTRAL", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kongo Centrale", "KONGO CENTRALE", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kisantu", "KONGO CENTRALE", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Mbanza-Ngungu", "KONGO CENTRALE", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Big Equateur", "BIG EQUATOR", couverture_dr["Region"])
+    couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kinshasa", "KINSHASA", couverture_dr["Region"])
     couverture_dr["SP/FP"]  = np.where(couverture_dr["SP/FP"] == "PAD", "Smart", couverture_dr["SP/FP"])
     couverture_dr["SP/FP"]  = np.where(couverture_dr["SP/FP"] == "Pad", "Smart", couverture_dr["SP/FP"])
     couverture_dr["SP/FP"]  = couverture_dr["SP/FP"].fillna("Accessories")
@@ -171,7 +178,7 @@ if sale is not None:
 
     # Filtre dates
 
-    select_date = achat[(achat["Sales Date"]>=str(start_date)) & (achat["Sales Date"]<=str(en_date))]
+    select_date = achat[(achat["Months"]>=str(start_date)) & (achat["Months"]<=str(en_date))]
     clients_date = clients[(clients["Monthly"]>=str(start_date)) & (clients["Monthly"]<=str(en_date))]
     
     if select_categories == "ALL":
@@ -245,7 +252,7 @@ if sale is not None:
         
 
     with col5 :
-        bka_sales = date_frame[date_frame["Region"] == "BIG KATANGA"]
+        bka_sales = date_frame[date_frame["Region"] == "BIG-KATANGA"]
         bka_cover = couverture_dr[couverture_dr["Region"] == "BIG KATANGA"]
 
         bka_sales["Sales Qty"] = bka_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
@@ -255,13 +262,13 @@ if sale is not None:
         if not bka_sales.empty or (not bka_cover.empty) :
             st.metric(label="BIG KATANGA Sales", value= f"{int(bka_sales["Sales Qty"].fillna(0).sum())} PCS", delta= f"Coverage BIG KATANGA : {int(bka_cover['Available Quantity'].fillna(0).sum())}") # La Situation de la vente de la region Big Kasai avec situation couverture comme delta
 
-        else :
+        else : 
             st.metric(label="BIG KATANGA Sales", value= 0, delta= "Coverage BIG KATANGA : 0 PCS")
         
 
     with col6 :
-        kc_sales = date_frame[date_frame["Region"] == "KONGO CENTRAL"]
-        kc_cover = couverture_dr[couverture_dr["Region"] == "KONGO CENTRAL"]
+        kc_sales = date_frame[date_frame["Region"] == "KONGO CENTRALE"]
+        kc_cover = couverture_dr[couverture_dr["Region"] == "KONGO CENTRALE"]
 
         kc_sales["Sales Qty"] = kc_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
         kc_cover["Available Quantity"] = kc_cover["Available Quantity"].fillna(0).astype(int)
@@ -275,7 +282,7 @@ if sale is not None:
         
 
     with col7 :
-        bk_sales = date_frame[date_frame["Region"] == "BIG KASAI"]
+        bk_sales = date_frame[date_frame["Region"] == "BIG-KASAI"]
         bk_cover = couverture_dr[couverture_dr["Region"] == "BIG KASAI"]
 
         bk_sales["Sales Qty"] = bk_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
@@ -290,7 +297,7 @@ if sale is not None:
         
 
     with col8 :
-        be_sales = date_frame[date_frame["Region"] == "BIG EQUATOR"]
+        be_sales = date_frame[date_frame["Region"] == "BIG-EQUATOR"]
         be_cover = couverture_dr[couverture_dr["Region"] == "BIG EQUATOR"]
 
         be_sales["Sales Qty"] = be_sales["Sales Qty"].fillna(0).astype(int) # Conversion de la colonne "Sales Qty" en entier tout en remplaçant les valeurs manquantes par 0
@@ -334,9 +341,9 @@ if sale is not None:
         st.subheader("3- Monthly Sales for SMART PHONE")
 
         monthly_sales = date_frame[date_frame["SP/FP"] == "Smart"]
-        monthly_sales = monthly_sales.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
+        monthly_sales = monthly_sales.groupby("Months", as_index= False)["Sales Qty"].sum()
 
-        fig_month = px.line(monthly_sales, x="Sales Date", y="Sales Qty", text="Sales Qty")
+        fig_month = px.line(monthly_sales, x="Months", y="Sales Qty", text="Sales Qty")
         fig_month.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month)
         
@@ -468,9 +475,9 @@ if sale is not None:
         st.subheader("4- Monthly Sales for FEATURE PHONE")
 
         monthly_salesFP = date_frame[date_frame["SP/FP"] == "Feature"]
-        monthly_sales_fp = monthly_salesFP.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
+        monthly_sales_fp = monthly_salesFP.groupby("Months", as_index= False)["Sales Qty"].sum()
 
-        fig_month_fp = px.line(monthly_sales_fp, x="Sales Date", y="Sales Qty", text="Sales Qty")
+        fig_month_fp = px.line(monthly_sales_fp, x="Months", y="Sales Qty", text="Sales Qty")
         fig_month_fp.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_fp, key="fig_month_fp")
         
@@ -668,9 +675,9 @@ if sale is not None:
         st.markdown("___")
 
         st.subheader("3- Monthly sales for SMART PHONE")
-        rm_month = regional_dataset_sp.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
+        rm_month = regional_dataset_sp.groupby("Months", as_index= False)["Sales Qty"].sum()
         
-        fig_rm_month_sp = px.line(rm_month, x="Sales Date", y="Sales Qty", text= "Sales Qty")
+        fig_rm_month_sp = px.line(rm_month, x="Months", y="Sales Qty", text= "Sales Qty")
         fig_rm_month_sp.update_traces(textposition= 'top center')
         st.plotly_chart(fig_rm_month_sp)
         st.markdown("___")
@@ -718,9 +725,9 @@ if sale is not None:
         st.markdown("___")
 
         st.subheader("4- Monthly sales for FEATURE PHONE")
-        rm_month_fp = regional_dataset_fp.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
+        rm_month_fp = regional_dataset_fp.groupby("Months", as_index= False)["Sales Qty"].sum()
         
-        fig_rm_month_fp = px.line(rm_month_fp, x="Sales Date", y="Sales Qty", text= "Sales Qty")
+        fig_rm_month_fp = px.line(rm_month_fp, x="Months", y="Sales Qty", text= "Sales Qty")
         fig_rm_month_fp.update_traces(textposition= 'top center')
         st.plotly_chart(fig_rm_month_fp)
         st.markdown("___")
@@ -825,8 +832,8 @@ if sale is not None:
 
         st.subheader("3- Monthly sales for SMART PHONE")
 
-        sr_month = sp_dataset_sr.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
-        fig_month_sr_sp = px.line(sr_month, x="Sales Date", y="Sales Qty", text= "Sales Qty")
+        sr_month = sp_dataset_sr.groupby("Months", as_index= False)["Sales Qty"].sum()
+        fig_month_sr_sp = px.line(sr_month, x="Months", y="Sales Qty", text= "Sales Qty")
         fig_month_sr_sp.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_sr_sp)
         st.markdown("___")
@@ -867,8 +874,8 @@ if sale is not None:
 
         st.subheader("4- Monthly sales for FEATURE PHONE")
 
-        sr_month_fp = fp_dataset_sr.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
-        fig_month_sr_fp = px.line(sr_month_fp, x="Sales Date", y="Sales Qty", text= "Sales Qty")
+        sr_month_fp = fp_dataset_sr.groupby("Months", as_index= False)["Sales Qty"].sum()
+        fig_month_sr_fp = px.line(sr_month_fp, x="Months", y="Sales Qty", text= "Sales Qty")
         fig_month_sr_fp.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_sr_fp)
         st.markdown("___")
@@ -971,8 +978,8 @@ if sale is not None:
 
         st.subheader("3- Monthly sales for SMART PHONE")
 
-        shops_month_sp = sp_dataset_shops.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
-        fig_shops_month_sp = px.line(shops_month_sp,  x="Sales Date", y="Sales Qty", text="Sales Qty")
+        shops_month_sp = sp_dataset_shops.groupby("Months", as_index= False)["Sales Qty"].sum()
+        fig_shops_month_sp = px.line(shops_month_sp,  x="Months", y="Sales Qty", text="Sales Qty")
         fig_shops_month_sp.update_traces(textposition= 'top center')
         st.plotly_chart(fig_shops_month_sp, key= "bar23")
         st.markdown("___")
@@ -1006,8 +1013,8 @@ if sale is not None:
 
         st.subheader("4- Monthly sales for FEATURE PHONE")
 
-        shops_month_fp = fp_dataset_shops.groupby("Sales Date", as_index= False)["Sales Qty"].sum()
-        fig_shop_month_fp = px.line(shops_month_fp, x="Sales Date", y="Sales Qty", text="Sales Qty")
+        shops_month_fp = fp_dataset_shops.groupby("Months", as_index= False)["Sales Qty"].sum()
+        fig_shop_month_fp = px.line(shops_month_fp, x="Months", y="Sales Qty", text="Sales Qty")
         fig_shop_month_fp.update_traces(textposition= 'top center')
         st.plotly_chart(fig_shop_month_fp, key= "bar34")
         st.markdown("___")
@@ -1145,12 +1152,32 @@ if sale is not None:
     fig_sd_shoply.update_traces(textposition= 'outside')
     st.plotly_chart(fig_sd_shoply)
 
-    st.markdown("___")
+    ###########################################
+    ## Realisationpa par clients via Province
+    ###########################
+    st.subheader("Sub-dealers by sales")
 
+    sd = clients_date["AREA"].unique()
+
+    all_area = ["All area"] + sorted(clients_date["AREA"].dropna().unique().tolist())
+
+    selector_sd = st.selectbox("Choose your Area :", all_area)
+
+    if selector_sd == "All area" :
+        sd_selector = clients_date
+
+    else:
+        sd_selector = clients_date[clients_date["AREA"] == selector_sd]
+
+    groupe_by_sd = sd_selector.groupby(["AREA", "Own Name"], as_index= False)["Sales Qty"].sum()
+    
+    fig_sd = px.bar(groupe_by_sd, x="Own Name", y="Sales Qty", text="Sales Qty", color="Own Name")
+    fig_sd.update_traces(textposition = 'outside')
+    st.plotly_chart(fig_sd)
+    
+    st.markdown("___")
 
     #############################
     ### FIN
     #########################
     st.title("THANKS FOR YOUR ATTENTION !")
-
-         
