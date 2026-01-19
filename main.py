@@ -51,14 +51,14 @@ dashboard3 = st.Page(
 dashboard4 = st.Page(
     page="SP_dashboard_ST.py",
     title="ST DashBoard for SP",
-    icon=":material/bar_chart:",
+    icon=":material/bar_chart:"
    
 )
 
 dashboard5 = st.Page(
     page="SP_dashboard_SD.py",
     title="SD DashBoard for SP",
-    icon=":material/bar_chart:",
+    icon=":material/bar_chart:"
 )
 
 
