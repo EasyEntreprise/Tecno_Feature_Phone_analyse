@@ -75,7 +75,7 @@ report = st.Page(
 )
 
 converter = st.Page(
-    page = "csv converter.py",
+    page = "csv_converter.py",
     title = "Excel to CSV Converter",
     icon = ":material/file_download:"
 )
