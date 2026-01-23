@@ -427,7 +427,7 @@ if file_st_fp is not None:
     purchases_global.fit(prediction_global)
 
     # Prévision sur 3 mois
-    predict_futur = purchases_global.make_future_dataframe(periods=12, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    predict_futur = purchases_global.make_future_dataframe(periods=12, freq='ME') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
     forecast_global = purchases_global.predict(predict_futur)
 
     # -------------------------------
@@ -502,7 +502,7 @@ if file_st_fp is not None:
 
         model_ville = Prophet()
         model_ville.fit(city_data)
-        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='M')
+        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='ME')
         forecast_ville = model_ville.predict(future_ville)
         forecast_ville["City"] = city
         predictions_all.append(forecast_ville)
@@ -577,7 +577,7 @@ if file_st_fp is not None:
     model_forecast_all = Prophet()
     model_forecast_all.fit(st_models_all)
 
-    model_future_all = model_forecast_all.make_future_dataframe(periods=12, freq='M')
+    model_future_all = model_forecast_all.make_future_dataframe(periods=12, freq='ME')
     forecast_model_all = model_forecast_all.predict(model_future_all)
 
     st.write(f"📊 Forecast Evolution by {select_models_all}")
@@ -942,7 +942,7 @@ if file_sd_fp is not None:
     purchases_global.fit(prediction_global)
 
     # Prévision sur 3 mois
-    predict_futur = purchases_global.make_future_dataframe(periods=12, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    predict_futur = purchases_global.make_future_dataframe(periods=12, freq='ME') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
     forecast_global = purchases_global.predict(predict_futur)
     
 
@@ -988,7 +988,7 @@ if file_sd_fp is not None:
     model_forecast_all = Prophet()
     model_forecast_all.fit(sd_models_all)
 
-    model_future_all = model_forecast_all.make_future_dataframe(periods=12, freq='M')
+    model_future_all = model_forecast_all.make_future_dataframe(periods=12, freq='ME')
     forecast_model_all = model_forecast_all.predict(model_future_all)
 
     st.write(f"📊 Forecast Evolution by {select_models_all}")
@@ -1046,7 +1046,7 @@ if file_sd_fp is not None:
 
         model_ville = Prophet()
         model_ville.fit(city_data)
-        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='M')
+        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='ME')
         forecast_ville = model_ville.predict(future_ville)
         forecast_ville["Cities"] = city
         predictions_all.append(forecast_ville)
@@ -1364,7 +1364,7 @@ if file_st_sp is not None:
     purchases_global_sp.fit(prediction_global_sp)
 
     # Prévision sur 3 mois
-    predict_futur_sp = purchases_global_sp.make_future_dataframe(periods=12, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    predict_futur_sp = purchases_global_sp.make_future_dataframe(periods=12, freq='ME') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
     forecast_global_sp = purchases_global_sp.predict(predict_futur_sp)
 
     # -------------------------------
@@ -1435,7 +1435,7 @@ if file_st_sp is not None:
 
         model_ville_sp = Prophet()
         model_ville_sp.fit(city_data_st)
-        future_ville_sp = model_ville_sp.make_future_dataframe(periods=nb_mois_sp_st, freq='M')
+        future_ville_sp = model_ville_sp.make_future_dataframe(periods=nb_mois_sp_st, freq='ME')
         forecast_ville_sp = model_ville_sp.predict(future_ville_sp)
         forecast_ville_sp["City"] = city_st
         predictions_sp_st_all.append(forecast_ville_sp)
@@ -1505,7 +1505,7 @@ if file_st_sp is not None:
     series_forecast_all_sp = Prophet()
     series_forecast_all_sp.fit(st_series_all_sp)
 
-    series_future_all_sp = series_forecast_all_sp.make_future_dataframe(periods=12, freq='M')
+    series_future_all_sp = series_forecast_all_sp.make_future_dataframe(periods=12, freq='ME')
     forecast_series_all_sp = series_forecast_all_sp.predict(series_future_all_sp)
 
     st.write(f"📊 Forecast Evolution by {select_series_all_sp}")
@@ -1801,7 +1801,7 @@ if file_sd_sp is not None:
     purchases_sd_sp.fit(prediction_sd_sp)
 
     # Prévision sur 3 mois
-    predict_futur_sp = purchases_sd_sp.make_future_dataframe(periods=12, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    predict_futur_sp = purchases_sd_sp.make_future_dataframe(periods=12, freq='ME') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
     forecast_global_sp = purchases_sd_sp.predict(predict_futur_sp)
     
 
@@ -1847,7 +1847,7 @@ if file_sd_sp is not None:
     series_forecast_sp_sd = Prophet()
     series_forecast_sp_sd.fit(sd_serie_sp)
 
-    series_future_sp_sd = series_forecast_sp_sd.make_future_dataframe(periods=12, freq='M')
+    series_future_sp_sd = series_forecast_sp_sd.make_future_dataframe(periods=12, freq='ME')
     series_model_sp_sd = series_forecast_sp_sd.predict(series_future_sp_sd)
 
     st.write(f"📊 Forecast Evolution by {select_series_all_sp}")
@@ -1905,7 +1905,7 @@ if file_sd_sp is not None:
 
         model_ville_SD = Prophet()
         model_ville_SD.fit(city_data_SD)
-        future_ville_SD = model_ville_SD.make_future_dataframe(periods=nb_mois_SD, freq='M')
+        future_ville_SD = model_ville_SD.make_future_dataframe(periods=nb_mois_SD, freq='ME')
         forecast_ville_SD = model_ville_SD.predict(future_ville_SD)
         forecast_ville_SD["Cities"] = city_SD
         predictions_all_SD.append(forecast_ville_SD)
