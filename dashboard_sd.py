@@ -463,7 +463,7 @@ if file is not None:
     purchases_global.fit(prediction_global)
 
     # Prévision sur 3 mois
-    predict_futur = purchases_global.make_future_dataframe(periods=3, freq='M') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
+    predict_futur = purchases_global.make_future_dataframe(periods=3, freq='ME') # On fait une prediction de 3 Mois en tenant compte de l'histoire des achats
     forecast_global = purchases_global.predict(predict_futur)
     
 
@@ -511,7 +511,7 @@ if file is not None:
     model_forecast_all = Prophet()
     model_forecast_all.fit(sd_models_all)
 
-    model_future_all = model_forecast_all.make_future_dataframe(periods=3, freq='M')
+    model_future_all = model_forecast_all.make_future_dataframe(periods=3, freq='ME')
     forecast_model_all = model_forecast_all.predict(model_future_all)
 
     st.write(f"📊 Forecast Evolution by {select_models_all}")
@@ -569,7 +569,7 @@ if file is not None:
 
         model_ville = Prophet()
         model_ville.fit(city_data)
-        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='M')
+        future_ville = model_ville.make_future_dataframe(periods=nb_mois, freq='ME')
         forecast_ville = model_ville.predict(future_ville)
         forecast_ville["Cities"] = city
         predictions_all.append(forecast_ville)
@@ -712,7 +712,7 @@ if file is not None:
     sd_predict_month.fit(sd_predictionMensuel)
 
     # Prévision sur 3 mois
-    sd_futur = sd_predict_month.make_future_dataframe(periods=3, freq='M')
+    sd_futur = sd_predict_month.make_future_dataframe(periods=3, freq='ME')
     sd_forcast = sd_predict_month.predict(sd_futur)
 
     # -------------------------------
@@ -746,7 +746,7 @@ if file is not None:
     model_forecast = Prophet()
     model_forecast.fit(sd_models)
 
-    model_future = model_forecast.make_future_dataframe(periods=3, freq='M')
+    model_future = model_forecast.make_future_dataframe(periods=3, freq='ME')
     forecast_model = model_forecast.predict(model_future)
 
     st.subheader(f"📊 Forecast Evolution by {select_models}")
