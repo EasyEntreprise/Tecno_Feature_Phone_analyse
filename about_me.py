@@ -4,6 +4,10 @@ import plotly.express as px
 import streamlit as st
 import time
 import os
+import sys
+from PIL import Image, ImageTk
+from tkinter import *
+
 
 
 # DETAILS
@@ -11,6 +15,7 @@ import os
 col1, col2 = st.columns(2, gap="small", vertical_alignment="center")
 with col1:
     st.image("./images/Rodrigue folio-1.png", width=380)
+    
 
 with col2:
     st.title("Rodrigue NSINSULU MAYANZA", anchor=False)
