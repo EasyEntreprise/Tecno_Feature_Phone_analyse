@@ -5,8 +5,8 @@ import streamlit as st
 import time
 import os
 import sys
-from PIL import Image, ImageTk
-from tkinter import *
+#from PIL import Image, ImageTk
+#from tkinter import *
 
 
 
