@@ -160,7 +160,6 @@ if sale is not None:
     # Filtre dates
 
     select_date = achat[(achat["Months"]>=str(start_date)) & (achat["Months"]<=str(en_date))]
-    clients_date = clients[(clients["Monthly"]>=str(start_date)) & (clients["Monthly"]<=str(en_date))]
     
     if select_categories == "ALL":
         date_frame = select_date
@@ -597,13 +596,14 @@ if sale is not None:
         st.metric(label= "Regional Manager Name", value= selected_regional)
     with cold:
         # Nombre des shops
-        rm_nbrShop = regional_dataset.groupby("Regional Manager", as_index= False)["Shops Name"].count()
-        st.metric(label= "Total Shops", value= f"{rm_nbrShop["Shops Name"].unique()} Shops")
+        
+        rm_nbrShop = regional_dataset["Shops Name"].nunique()
+        st.metric(label= "Total Shops", value= f"{rm_nbrShop} Shops")
         
     with cole:
         # Nombre des staffs
-        rm_nbrStaff = regional_dataset.groupby("Regional Manager", as_index= False)["Supervisor Name"].count()
-        st.metric(label= "Total Staffs", value= rm_nbrStaff["Supervisor Name"].unique())
+        rm_nbrStaff = regional_dataset["Supervisor Name"].nunique()
+        st.metric(label= "Total Staffs", value= rm_nbrStaff)
 
     with colf:
         # Target
@@ -769,8 +769,8 @@ if sale is not None:
         
     with colh:
         # Nombre des shops
-        sr_nbrShop = supervisor_dataset.groupby("Supervisor Name", as_index= False)["Shops Name"].count()
-        st.metric(label="Total Shops", value= f"{sr_nbrShop["Shops Name"][0]} Shops")
+        sr_nbrShop = supervisor_dataset["Shops Name"].nunique()
+        st.metric(label="Total Shops", value= f"{sr_nbrShop} Shops")
 
         
     with coli:
@@ -1022,7 +1022,21 @@ if sale is not None:
     ##############################################
     ## 4- Sub-dealers
     #####
-    st.subheader("C- Profil Sub-Dealers")
+    st.subheader("D- Profil Sub-Dealers")
+
+    # Select Date
+    col1x, col2x = st.columns(2)
+            
+    with col1x:
+        st.text("Select Date Range")
+        start_date_sd = st.date_input(label="Start Dates", key= "SD date enter")
+
+    with col2x:
+        st.text("Select Date Range")
+        en_date_sd = st.date_input(label="End Dates", key= "SD date out")
+
+    clients_date = clients[(clients["Monthly"]>=str(start_date_sd)) & (clients["Monthly"]<=str(en_date_sd))]
+
 
     ##########################
     ## Metric 1
@@ -1033,28 +1047,25 @@ if sale is not None:
 
     kin_sd = clients_date[clients_date["AREA"] == "KINSHASA"]
     sd_kin = kin_sd["Own Name"].nunique()
-    kin_shop = clients_date[clients_date["AREA"] == "KINSHASA"]
-    shop_kin = kin_shop["Shops Name"].nunique()
+    shop_kin = kin_sd["Shops Name"].nunique()
+
 
     kat_sd = clients_date[clients_date["AREA"] == "BIG KATANGA"]
     sd_kat = kat_sd["Own Name"].nunique()
-    kat_shop = clients_date[clients_date["AREA"] == "BIG KATANGA"]
-    shop_kat = kat_shop["Shops Name"].nunique()
+    shop_kat = kat_sd["Shops Name"].nunique()
 
     kc_sd = clients_date[clients_date["AREA"] == "KONGO CENTRAL"]
     sd_kc = kc_sd["Own Name"].nunique()
-    kc_shop = clients_date[clients_date["AREA"] == "KONGO CENTRAL"]
-    shop_kc = kc_shop["Shops Name"].nunique()
+    shop_kc = kc_sd["Shops Name"].nunique()
 
     kasai_sd = clients_date[clients_date["AREA"] == "BIG KASAI"]
     sd_kasai = kasai_sd["Own Name"].nunique()
-    kasai_shop = clients_date[clients_date["AREA"] == "BIG KASAI"]
-    shop_kasai = kasai_shop["Shops Name"].nunique()
+    shop_kasai = kasai_sd["Shops Name"].nunique()
 
     equa_sd = clients_date[clients_date["AREA"] == "BIG EQUATOR"]
     sd_equa = equa_sd["Own Name"].nunique()
-    equa_shop = clients_date[clients_date["AREA"] == "BIG EQUATOR"]
-    shop_equa = equa_shop["Shops Name"].nunique()
+    shop_equa = equa_sd["Shops Name"].nunique()
+
 
     
     x1, x2, x3, x4, x5, x6 = st.columns(6)
@@ -1081,13 +1092,12 @@ if sale is not None:
 
     with z1:
         # Nom
-        #area = clients_choose["Region"]
         st.metric(label= "Sub-dealer Name : ", value= clients_select)
 
     with z2:
         # Nombre des shops
-        shop_sd = clients_choose.groupby("Own Name", as_index= False)["Shops Name"].count()
-        st.metric(label= "Shops Qty", value= f"{shop_sd["Shops Name"][0]} Shops") 
+        shop_sd = clients_choose["Shops Name"].nunique()
+        st.metric(label= "Shops Qty", value= f"{shop_sd} Shops") 
         
     
     with z3:
