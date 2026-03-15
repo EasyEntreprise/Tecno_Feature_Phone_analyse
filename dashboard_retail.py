@@ -76,9 +76,9 @@ def read_file(file):
         return None
 
 # Load dataset
-sale = st.file_uploader("📂 Insert your Excel Sale file by pressing the 'Browse files' button", type=["xlsx","xls", "csv"])
+sale = st.file_uploader("📂 Insert your Excel Sale file on Tecno Business Shops by pressing the 'Browse files' button", type=["xlsx","xls", "csv"])
 coverage = st.file_uploader("Insert your Excel Inventory file by pressing the 'Browse files' button", type=["xlsx", "xls"])
-sub_dealers = st.file_uploader("Insert your Excel sub-dealers file by pressing the 'Browse files' button", type=["xlsx", "xls"])
+sub_dealers = st.file_uploader("Insert your Excel Tecno Business SD by pressing the 'Browse files' button", type=["xlsx", "xls"])
 
 if sale is not None:
 
@@ -177,6 +177,8 @@ if sale is not None:
     ##############################
     ####### DATA METRIC ##########
     ##############################
+    
+    st.title("I. PROFIL SHOPS-RM-SR-PR AND TPR")
 
     col1, col2 = st.columns(2)
 
@@ -300,7 +302,7 @@ if sale is not None:
     # GRAPHIC
     # #################
 
-    st.subheader("I. GRAPHIC EXPLORE", divider="rainbow")
+    st.subheader("I.A. GRAPHIC EXPLORE", divider="rainbow")
 
     cola, colb = st.columns(2)
 
@@ -573,7 +575,7 @@ if sale is not None:
     ########################
     ### PROFIL RM-SR
     ################
-    st.subheader("II. PROFIL", divider="rainbow")
+    st.subheader("I.B. PROFIL", divider="rainbow")
 
 
     ######################
@@ -590,7 +592,7 @@ if sale is not None:
     ################
     ## DATA METRIC
     ######
-    colc, cold, cole, colf, colg, colh = st.columns(6)
+    colc, cold, cole = st.columns(3)
 
     with colc:
         st.metric(label= "Regional Manager Name", value= selected_regional)
@@ -605,26 +607,6 @@ if sale is not None:
         rm_nbrStaff = regional_dataset["Supervisor Name"].nunique()
         st.metric(label= "Total Staffs", value= rm_nbrStaff)
 
-    with colf:
-        # Target
-        rm_target = regional_dataset["Target Shop"].sum()
-        st.metric(label= "Target", value= rm_target)
-        
-
-    with colg :
-        # Achievemen
-        rm_ach = regional_dataset["Sales Qty"].sum()
-        st.metric(label= "Achievemen", value= rm_ach)
-
-    with colh :
-        # KPI RM
-        regional_dataset["Achievement %"] = regional_dataset.apply(
-            lambda row: (row["Sales Qty"] / row["Target Shop"] * 100) if row["Target Shop"] not in [0, None] else 0,
-            axis = 1
-        )
-
-        regional_dataset["Gap"] = regional_dataset["Sales Qty"] - regional_dataset["Target Shop"]
-        st.metric(label= "Achievemen %", value= f"{rm_ach} %")
     
     
     colx1, colx2 = st.columns(2)
@@ -761,7 +743,7 @@ if sale is not None:
     ################
     ## DATA METRIC
     ######
-    colg, colh, coli, colj = st.columns(4)
+    colg, colh, colj = st.columns(3)
 
     with colg:
         # Name
@@ -772,11 +754,6 @@ if sale is not None:
         sr_nbrShop = supervisor_dataset["Shops Name"].nunique()
         st.metric(label="Total Shops", value= f"{sr_nbrShop} Shops")
 
-        
-    with coli:
-        # Target
-        sr_target = supervisor_dataset["Target Shop"].sum()
-        st.metric(label="Target", value= f"{sr_target} PCS")
 
     with colj:
         # Vente
@@ -1022,7 +999,9 @@ if sale is not None:
     ##############################################
     ## 4- Sub-dealers
     #####
-    st.subheader("D- Profil Sub-Dealers")
+   
+    st.title("II. PROFIL SUB-DEALERS")
+    st.markdown("___")
 
     # Select Date
     col1x, col2x = st.columns(2)
@@ -1040,6 +1019,8 @@ if sale is not None:
 
     ##########################
     ## Metric 1
+
+    st.subheader("II.1. Customers Situation")
 
     clients_unique = clients_date["Own Name"].unique()
     nbr_clients = clients_date["Own Name"].nunique()
@@ -1083,7 +1064,21 @@ if sale is not None:
     with x6 :  
         st.metric(label= "EQUATOR SD number", value= f"{sd_equa} Customers", delta= f"{shop_equa} Shops")
 
+
+    ##################################
+    ## Classements meilleurs clients
+    ######
+    st.subheader("II.2. Ranking of Top Customers")
+
+    groupment = clients_date.groupby("Own Name", as_index=False)["Sales Qty"].sum()
+    sorted_groupment = groupment.sort_values(by="Sales Qty", ascending= False)
+    st.dataframe(sorted_groupment)
     
+
+    ####################
+    ## Select Customers
+    ######
+
     clients_select = st.selectbox("Choose your Sub-dealer", clients_unique)
     clients_choose = clients_date[clients_date["Own Name"] == clients_select]
     
@@ -1135,7 +1130,7 @@ if sale is not None:
     #############################
     ## Realisationpa par Shops
     ############
-    st.subheader("Shops by sales")
+    st.subheader("II.2.1. Shops by sales")
 
     sd_shoply = clients_choose.groupby("Shops Name", as_index= False)["Sales Qty"].sum()
 
@@ -1146,7 +1141,7 @@ if sale is not None:
     ###########################################
     ## Realisationpa par clients via Province
     ###########################
-    st.subheader("Sub-dealers by sales")
+    st.subheader("II.2.2. Sub-dealers by sales")
 
     sd = clients_date["AREA"].unique()
 
