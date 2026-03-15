@@ -326,13 +326,21 @@ if file is not None:
 
 
     # Filtrage des donnees en fonction de la selection
+    # Months
     purchase_groupby_months = date_frame.groupby(["Products", "Months"], as_index= False)["Purchased Qty"].sum()
-    #st.write(purchase_groupby_months)
     df_purchase_months = purchase_groupby_months[purchase_groupby_months["Products"].isin(selected_models_months)]
 
     fig_select_months = px.line(df_purchase_months, x="Months", y="Purchased Qty", color="Products", text="Purchased Qty")
     fig_select_months.update_traces(textposition = 'top center')
     st.plotly_chart(fig_select_months)
+
+    # Weeks
+    purchase_groupby_weeks = date_frame.groupby(["Products", "Weeks"], as_index= False)["Purchased Qty"].sum()
+    df_purchase_weeks = purchase_groupby_weeks[purchase_groupby_weeks["Products"].isin(selected_models_months)]
+
+    fig_select_weeks = px.line(df_purchase_weeks, x="Weeks", y="Purchased Qty", color="Products", text="Purchased Qty")
+    fig_select_weeks.update_traces(textposition = 'top center') 
+    st.plotly_chart(fig_select_weeks)
  
 
     ##################################
