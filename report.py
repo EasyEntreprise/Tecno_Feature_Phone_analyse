@@ -262,19 +262,19 @@ if file_st_fp is not None:
     with col7:
         # Create Histogram for prices
 
-        date_groupby = date_frame_st.groupby(["Years", "Products", "Prices ($)"], as_index= False)["Purchased Qty"].sum()
+        date_groupby = date_frame_st.groupby(["Years", "Products", "Prices_usd"], as_index= False)["Purchased Qty"].sum()
         prices_filter = date_groupby[date_groupby["Years"] == weeks_enter]
 
         # Create a histogram
-        fig_hist = px.histogram(prices_filter, x="Prices ($)", title="Distribution models on prices", hover_data=["Purchased Qty"])
+        fig_hist = px.histogram(prices_filter, x="Prices_usd", title="Distribution models on prices", hover_data=["Purchased Qty"])
         st.plotly_chart(fig_hist)
 
 
     with col8 :
-        key_model = date_frame_st.groupby(["Years", "Products","Prices ($)"], as_index= False)["Purchased Qty"].sum()
+        key_model = date_frame_st.groupby(["Years", "Products","Prices_usd"], as_index= False)["Purchased Qty"].sum()
         key_filter = key_model[key_model["Years"] == weeks_enter]
 
-        fig_key = px.bar(key_filter, x="Products", y="Prices ($)", text="Prices ($)", title="Graphic Models and Prices", color="Products")
+        fig_key = px.bar(key_filter, x="Products", y="Prices_usd", text="Prices_usd", title="Graphic Models and Prices", color="Products")
         fig_key.update_traces(textposition = 'outside')
         st.plotly_chart(fig_key)
 
@@ -611,7 +611,7 @@ if file_sd_fp is not None:
 
     # Traitement des valeurs null
    
-    dataset_sd = dataset_full_sd.dropna(subset="Purchases Qty (Pcs)") # Supprimer les valeurs null
+    dataset_sd = dataset_full_sd.dropna(subset="Purchases_Qty") # Supprimer les valeurs null
 
     # Creation des dates
     col11, col12 = st.columns(2)
@@ -637,8 +637,8 @@ if file_sd_fp is not None:
     ######
     st.subheader("SD General situation", divider="rainbow")
     
-    sd_years = dataset_sd.groupby("Years", as_index= False)["Purchases Qty (Pcs)"].sum()
-    fig_years = px.line(sd_years, x="Years", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Sub-dealers Situation purchase by years")
+    sd_years = dataset_sd.groupby("Years", as_index= False)["Purchases_Qty"].sum()
+    fig_years = px.line(sd_years, x="Years", y="Purchases_Qty", text="Purchases_Qty", title="Sub-dealers Situation purchase by years")
     fig_years.update_traces(textposition = 'top center')
     st.plotly_chart(fig_years)
 
@@ -649,18 +649,18 @@ if file_sd_fp is not None:
     with cola :
 
         annee_x = st.number_input("Write the year you want to analyze")
-        sd_month = date_frame_sd.groupby(["Years", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_month = date_frame_sd.groupby(["Years", "Date"], as_index= False)["Purchases_Qty"].sum()
         filtre_mois = sd_month[sd_month["Years"] == annee_x]
-        fig_month = px.line(filtre_mois, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Month for year {annee_x}")
+        fig_month = px.line(filtre_mois, x="Date", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Month for year {annee_x}")
         fig_month.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month)
 
     with colb :
 
         weeks_enter_x = st.number_input("Write the year you wanna analyze")
-        sd_month_2 = date_frame_sd.groupby(["Years", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_month_2 = date_frame_sd.groupby(["Years", "Date"], as_index= False)["Purchases_Qty"].sum()
         filtre_mois_2 = sd_month[sd_month["Years"] == weeks_enter_x]
-        fig_month_2 = px.line(filtre_mois_2, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Month for year {weeks_enter_x}")
+        fig_month_2 = px.line(filtre_mois_2, x="Date", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Month for year {weeks_enter_x}")
         fig_month_2.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_2)
     
@@ -674,9 +674,9 @@ if file_sd_fp is not None:
     colc, cold = st.columns(2)
 
     with colc:
-        region = date_frame_sd.groupby(["Years", "Cities"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        region = date_frame_sd.groupby(["Years", "Cities"], as_index= False)["Purchases_Qty"].sum()
         filtre_region = region[region["Years"] == annee_x]
-        fig_region = px.bar(filtre_region, x="Cities", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by region for year {annee_x}", color="Cities")
+        fig_region = px.bar(filtre_region, x="Cities", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by region for year {annee_x}", color="Cities")
         fig_region.update_traces(textposition = 'outside')
         st.plotly_chart(fig_region)
 
@@ -684,9 +684,9 @@ if file_sd_fp is not None:
 
 
     with cold:
-        city = date_frame_sd.groupby(["Years", "Cities"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        city = date_frame_sd.groupby(["Years", "Cities"], as_index= False)["Purchases_Qty"].sum()
         filtre_city = city[city["Years"] == weeks_enter_x]
-        fig_city = px.bar(filtre_city, x="Cities", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by region for year {weeks_enter_x}", color="Cities")
+        fig_city = px.bar(filtre_city, x="Cities", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by region for year {weeks_enter_x}", color="Cities")
         fig_city.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city)
 
@@ -709,15 +709,15 @@ if file_sd_fp is not None:
     with colce:
 
         sd_3 = sd_selector[sd_selector["Years"] == annee_x]
-        sd_groupby = sd_3.groupby(["Customers Name","Years"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_groupby = sd_3.groupby(["Customers_Name","Years"], as_index= False)["Purchases_Qty"].sum()
         
-        fig_groupby = px.bar(sd_groupby, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by region for year {annee_x}", color="Customers Name")
+        fig_groupby = px.bar(sd_groupby, x="Customers_Name", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by region for year {annee_x}", color="Customers_Name")
         fig_groupby.update_traces(textposition = 'outside')
         st.plotly_chart(fig_groupby)
 
         st.markdown("___")
                              
-        fig_groupby_pie = go.Figure(data=[go.Pie(labels= sd_groupby["Customers Name"], values= sd_groupby["Purchases Qty (Pcs)"], title=f"Sub-dealers purchase Situation by region for year {annee_x}", opacity= 0.5)])
+        fig_groupby_pie = go.Figure(data=[go.Pie(labels= sd_groupby["Customers_Name"], values= sd_groupby["Purchases_Qty"], title=f"Sub-dealers purchase Situation by region for year {annee_x}", opacity= 0.5)])
         fig_groupby_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_groupby_pie)
 
@@ -726,15 +726,15 @@ if file_sd_fp is not None:
     with colde:
 
         sd_4 = sd_selector[sd_selector["Years"] == weeks_enter_x]
-        sd_groupby_2 = sd_4.groupby(["Customers Name","Years"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_groupby_2 = sd_4.groupby(["Customers_Name","Years"], as_index= False)["Purchases_Qty"].sum()
         
-        fig_groupby_2 = px.bar(sd_groupby_2, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by region for year {weeks_enter_x}", color="Customers Name")
+        fig_groupby_2 = px.bar(sd_groupby_2, x="Customers_Name", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by region for year {weeks_enter_x}", color="Customers_Name")
         fig_groupby_2.update_traces(textposition = 'outside')
         st.plotly_chart(fig_groupby_2)
 
         st.markdown("___")
 
-        fig_groupby_pie_2 = go.Figure(data=[go.Pie(labels= sd_groupby_2["Customers Name"], values= sd_groupby_2["Purchases Qty (Pcs)"], title=f"Sub-dealers purchase Situation by region for year {weeks_enter_x}", opacity= 0.5)])
+        fig_groupby_pie_2 = go.Figure(data=[go.Pie(labels= sd_groupby_2["Customers_Name"], values= sd_groupby_2["Purchases_Qty"], title=f"Sub-dealers purchase Situation by region for year {weeks_enter_x}", opacity= 0.5)])
         fig_groupby_pie_2.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_groupby_pie_2)
 
@@ -749,16 +749,16 @@ if file_sd_fp is not None:
     cole, colf = st.columns(2)
 
     with cole:
-        region_md = date_frame_sd.groupby(["Years", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        region_md = date_frame_sd.groupby(["Years", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_region_md = region_md[region_md["Years"] == annee_x]
-        fig_region_md = px.bar(filtre_region_md, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by models for year {annee_x}", color="Products")
+        fig_region_md = px.bar(filtre_region_md, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by models for year {annee_x}", color="Products")
         fig_region_md.update_traces(textposition = 'outside')
         st.plotly_chart(fig_region_md)
 
     with colf:
-        city_md = date_frame_sd.groupby(["Years", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        city_md = date_frame_sd.groupby(["Years", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_city_md = city_md[city_md["Years"] == weeks_enter_x]
-        fig_city_md = px.bar(filtre_city_md, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by models for year {weeks_enter_x}", color="Products")
+        fig_city_md = px.bar(filtre_city_md, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by models for year {weeks_enter_x}", color="Products")
         fig_city_md.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city_md)
 
@@ -769,7 +769,7 @@ if file_sd_fp is not None:
     st.subheader("SD Target and Achievement", divider="blue")
 
     SD_view_2025 = dataset_full_sd[dataset_full_sd["Years"] == 2025]
-    SD_target_2025 = SD_view_2025.groupby("Date", as_index= False)["Purchases Qty (Pcs)"].sum()
+    SD_target_2025 = SD_view_2025.groupby("Date", as_index= False)["Purchases_Qty"].sum()
 
     def creer_target_sd_mois(SD_target_2025):
         if SD_target_2025["Date"].nunique() == 1:
@@ -833,9 +833,9 @@ if file_sd_fp is not None:
     #-- Barre pour l'achievment ---
     SD_fig_cmb.add_trace(go.Bar(
         x = SD_target_2025["Date"],
-        y = SD_target_2025["Purchases Qty (Pcs)"],
+        y = SD_target_2025["Purchases_Qty"],
         name = "Achievment",
-        text = SD_target_2025["Purchases Qty (Pcs)"],
+        text = SD_target_2025["Purchases_Qty"],
         textposition= "auto", # il y a 'auto' 'outside' 'inside'
         marker_color = "skyblue"
     ))
@@ -856,7 +856,7 @@ if file_sd_fp is not None:
     #"""
     SD_fig_cmb.update_layout(
         title = "Sub-dealers > Target and Achievment for 2025", 
-        yaxis = dict(title= "Purchases Qty (Pcs)"),
+        yaxis = dict(title= "Purchases_Qty"),
         yaxis2 = dict(title= "Buy", overlaying = 'y', side = 'right'), 
         xaxis = dict(title = "Month"),
         legend = dict(x=0.1, y=1.1, orientation = 'h'), 
@@ -874,23 +874,23 @@ if file_sd_fp is not None:
     colg, colh = st.columns(2)
 
     with colg:
-        subDealer = date_frame_sd.groupby(["Years", "Customers Name"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        subDealer = date_frame_sd.groupby(["Years", "Customers_Name"], as_index= False)["Purchases_Qty"].sum()
         filtre_subDealer = subDealer[subDealer["Years"] == annee_x]
-        fig_subDealer = px.bar(filtre_subDealer, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation for year {annee_x}", color="Customers Name")
+        fig_subDealer = px.bar(filtre_subDealer, x="Customers_Name", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation for year {annee_x}", color="Customers_Name")
         fig_subDealer.update_traces(textposition = 'outside')
         st.plotly_chart(fig_subDealer)
 
     with colh:
-        sd = date_frame_sd.groupby(["Years", "Customers Name"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd = date_frame_sd.groupby(["Years", "Customers_Name"], as_index= False)["Purchases_Qty"].sum()
         filtre_sd = sd[sd["Years"] == weeks_enter_x]
-        fig_sd = px.bar(filtre_sd, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation for year {weeks_enter_x}", color="Customers Name")
+        fig_sd = px.bar(filtre_sd, x="Customers_Name", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation for year {weeks_enter_x}", color="Customers_Name")
         fig_sd.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sd)
     
     ###
     # Comparer les achats par client
 
-    clients = date_frame_sd["Customers Name"].unique()
+    clients = date_frame_sd["Customers_Name"].unique()
     
     ###
     # Select customer
@@ -899,22 +899,22 @@ if file_sd_fp is not None:
     coli, colj = st.columns(2)
 
     with coli :
-        sub_dealerx = date_frame_sd.groupby(["Years", "Customers Name", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sub_dealerx = date_frame_sd.groupby(["Years", "Customers_Name", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_sub_dealer = sub_dealerx[sub_dealerx["Years"] == annee_x] # Definir l'annee
         
-        filter_client =  filtre_sub_dealer[filtre_sub_dealer["Customers Name"] == select_sdx]
+        filter_client =  filtre_sub_dealer[filtre_sub_dealer["Customers_Name"] == select_sdx]
         
-        fig_sub_dealer = px.bar(filter_client, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Purchase situation of {select_sdx} for year {annee_x}", color="Products")
+        fig_sub_dealer = px.bar(filter_client, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Purchase situation of {select_sdx} for year {annee_x}", color="Products")
         fig_sub_dealer.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sub_dealer)
 
     with colj :
-        sub_dealer = date_frame_sd.groupby(["Years", "Customers Name", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sub_dealer = date_frame_sd.groupby(["Years", "Customers_Name", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_sub_client = sub_dealer[sub_dealer["Years"] == weeks_enter_x] # Definir l'annee
         
-        filter_custo =  filtre_sub_client[filtre_sub_client["Customers Name"] == select_sdx]
+        filter_custo =  filtre_sub_client[filtre_sub_client["Customers_Name"] == select_sdx]
         
-        fig_sub_custo = px.bar(filter_custo, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Purchase situation of {select_sdx} for year {weeks_enter_x}", color="Products")
+        fig_sub_custo = px.bar(filter_custo, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Purchase situation of {select_sdx} for year {weeks_enter_x}", color="Products")
         fig_sub_custo.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sub_custo)
 
@@ -934,8 +934,8 @@ if file_sd_fp is not None:
     st.success(f"{len(dataset_sd)} lignes de données chargées avec succès ✅")
 
     # Regrouper les ventes par mois
-    prediction_global = dataset_sd.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
-    prediction_global = prediction_global.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+    prediction_global = dataset_sd.groupby("Date")["Purchases_Qty"].sum().reset_index()
+    prediction_global = prediction_global.rename(columns={"Date":"ds", "Purchases_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
 
     # Modèle Prophet
     purchases_global = Prophet()
@@ -982,8 +982,8 @@ if file_sd_fp is not None:
 
     # Filtrage des donnees en fonction de la selection
     sd_models_choose_all = dataset_sd[dataset_sd["Products"].isin(select_models_all)]
-    sd_models_all = sd_models_choose_all.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
-    sd_models_all = sd_models_all.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
+    sd_models_all = sd_models_choose_all.groupby("Date")["Purchases_Qty"].sum().reset_index()
+    sd_models_all = sd_models_all.rename(columns={"Date": "ds", "Purchases_Qty": "y"})
 
     model_forecast_all = Prophet()
     model_forecast_all.fit(sd_models_all)
@@ -1010,15 +1010,15 @@ if file_sd_fp is not None:
     st.subheader("3. 📊Cities Forecasts")
 
     # Vérifier les colonnes requises
-    required_cols = {"Cities", "Date", "Purchases Qty (Pcs)"}
+    required_cols = {"Cities", "Date", "Purchases_Qty"}
     if not required_cols.issubset(dataset_sd.columns):
         st.error(f"The file must contain the columns : {', '.join(required_cols)}")
         st.stop()
     
     # Préparer les données
     
-    date_ville = dataset_sd.groupby(["Cities", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum() 
-    date_ville = date_ville.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})
+    date_ville = dataset_sd.groupby(["Cities", "Date"], as_index= False)["Purchases_Qty"].sum() 
+    date_ville = date_ville.rename(columns={"Date":"ds", "Purchases_Qty":"y"})
     date_ville["ds"] = pd.to_datetime(date_ville["ds"])
 
     cities = sorted(dataset_sd["Cities"].unique())
@@ -1289,19 +1289,19 @@ if file_st_sp is not None:
     with col7a:
         # Create Histogram for prices
 
-        date_groupby_sp = date_frame_st_sp.groupby(["Years", "Products", "Prices ($)"], as_index= False)["Purchased Qty"].sum()
+        date_groupby_sp = date_frame_st_sp.groupby(["Years", "Products", "Prices_usd"], as_index= False)["Purchased Qty"].sum()
         prices_filter_sp = date_groupby_sp[date_groupby_sp["Years"] == weeks_enter_sp]
 
         # Create a histogram
-        fig_hist_sp = px.histogram(prices_filter_sp, x="Prices ($)", title="Distribution models on prices", hover_data=["Purchased Qty"])
+        fig_hist_sp = px.histogram(prices_filter_sp, x="Prices_usd", title="Distribution models on prices", hover_data=["Purchased Qty"])
         st.plotly_chart(fig_hist_sp)
 
 
     with col8a :
-        key_model_sp = date_frame_st_sp.groupby(["Years", "Products","Prices ($)"], as_index= False)["Purchased Qty"].sum()
+        key_model_sp = date_frame_st_sp.groupby(["Years", "Products","Prices_usd"], as_index= False)["Purchased Qty"].sum()
         key_filter_sp = key_model_sp[key_model_sp["Years"] == weeks_enter_sp]
 
-        fig_key_sp = px.bar(key_filter_sp, x="Products", y="Prices ($)", text="Prices ($)", title="Graphic Models and Prices", color="Products")
+        fig_key_sp = px.bar(key_filter_sp, x="Products", y="Prices_usd", text="Prices_usd", title="Graphic Models and Prices", color="Products")
         fig_key_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_key_sp)
 
@@ -1539,7 +1539,7 @@ if file_sd_sp is not None:
 
     # Traitement des valeurs null
    
-    dataset_sd_sp = dataset_full_sd_sp.dropna(subset="Purchases Qty (Pcs)") # Supprimer les valeurs null
+    dataset_sd_sp = dataset_full_sd_sp.dropna(subset="Purchases_Qty") # Supprimer les valeurs null
 
     # Creation des dates
     col1z, col1y = st.columns(2)
@@ -1563,13 +1563,13 @@ if file_sd_sp is not None:
     #################
     # Convertir en numérique
     ######
-    dataset_sd_sp["Purchases Qty (Pcs)"] = pd.to_numeric(
-    dataset_sd_sp["Purchases Qty (Pcs)"],
+    dataset_sd_sp["Purchases_Qty"] = pd.to_numeric(
+    dataset_sd_sp["Purchases_Qty"],
     errors="coerce"
     )
 
-    date_frame_sd_sp["Purchases Qty (Pcs)"] = pd.to_numeric(
-    date_frame_sd_sp["Purchases Qty (Pcs)"],
+    date_frame_sd_sp["Purchases_Qty"] = pd.to_numeric(
+    date_frame_sd_sp["Purchases_Qty"],
     errors="coerce"
     )
 
@@ -1579,9 +1579,9 @@ if file_sd_sp is not None:
     ######
     st.subheader("SP : SD General situation", divider="rainbow")
 
-    sd_years_sd_sp = dataset_sd_sp.groupby("Years", as_index= False)["Purchases Qty (Pcs)"].sum()
+    sd_years_sd_sp = dataset_sd_sp.groupby("Years", as_index= False)["Purchases_Qty"].sum()
     
-    fig_years_sd_sp = px.line(sd_years_sd_sp, x="Years", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Sub-dealers Situation purchase by years")
+    fig_years_sd_sp = px.line(sd_years_sd_sp, x="Years", y="Purchases_Qty", text="Purchases_Qty", title="Sub-dealers Situation purchase by years")
     fig_years_sd_sp.update_traces(textposition = 'top center')
     st.plotly_chart(fig_years_sd_sp)
 
@@ -1596,19 +1596,19 @@ if file_sd_sp is not None:
     with colax :
         ans = st.number_input("Write your first year here :")
 
-        sd_month_sp = date_frame_sd_sp.groupby(["Years", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_month_sp = date_frame_sd_sp.groupby(["Years", "Date"], as_index= False)["Purchases_Qty"].sum()
         
         filtre_mois_sp = sd_month_sp[sd_month_sp["Years"] == ans]
-        fig_month_sd_sp = px.line(filtre_mois_sp, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Month for year {ans}")
+        fig_month_sd_sp = px.line(filtre_mois_sp, x="Date", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Month for year {ans}")
         fig_month_sd_sp.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_sd_sp)
 
     with colbx :
         ans_last = st.number_input("Write your last year here :")
 
-        sd_month_2_sp = date_frame_sd_sp.groupby(["Years", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_month_2_sp = date_frame_sd_sp.groupby(["Years", "Date"], as_index= False)["Purchases_Qty"].sum()
         filtre_mois_sp2 = sd_month_2_sp[sd_month_2_sp["Years"] == ans_last]
-        fig_month_sp2 = px.line(filtre_mois_sp2, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Month for year {ans_last}")
+        fig_month_sp2 = px.line(filtre_mois_sp2, x="Date", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Month for year {ans_last}")
         fig_month_sp2.update_traces(textposition = 'top center')
         st.plotly_chart(fig_month_sp2)
     
@@ -1621,16 +1621,16 @@ if file_sd_sp is not None:
     col1c, col1d = st.columns(2)
 
     with col1c:
-        region_sd_sp = date_frame_sd_sp.groupby(["Years", "Cities"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        region_sd_sp = date_frame_sd_sp.groupby(["Years", "Cities"], as_index= False)["Purchases_Qty"].sum()
         filtre_region_sd_sp = region_sd_sp[region_sd_sp["Years"] == ans]
-        fig_region_sd_sp = px.bar(filtre_region_sd_sp, x="Cities", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by region for year {ans}", color="Cities")
+        fig_region_sd_sp = px.bar(filtre_region_sd_sp, x="Cities", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by region for year {ans}", color="Cities")
         fig_region_sd_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_region_sd_sp)
 
     with col1d:
-        city_sd_sp = date_frame_sd_sp.groupby(["Years", "Cities"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        city_sd_sp = date_frame_sd_sp.groupby(["Years", "Cities"], as_index= False)["Purchases_Qty"].sum()
         filtre_sd_sp = city_sd_sp[city_sd_sp["Years"] == ans_last]
-        fig_city_sd = px.bar(filtre_sd_sp, x="Cities", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by region for year {ans_last}", color="Cities")
+        fig_city_sd = px.bar(filtre_sd_sp, x="Cities", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by region for year {ans_last}", color="Cities")
         fig_city_sd.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city_sd)
         
@@ -1643,25 +1643,25 @@ if file_sd_sp is not None:
     keye, keyf = st.columns(2)
 
     with keye:
-        region_sd_sp = date_frame_sd_sp.groupby(["Years", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        region_sd_sp = date_frame_sd_sp.groupby(["Years", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_region_sd_sp = region_sd_sp[region_sd_sp["Years"] == ans]
-        fig_region_sd_sp = px.bar(filtre_region_sd_sp, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by models for year {ans}", color="Products")
+        fig_region_sd_sp = px.bar(filtre_region_sd_sp, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by models for year {ans}", color="Products")
         fig_region_sd_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_region_sd_sp)
 
         st.markdown("___")
 
-        old_series_sp = date_frame_sd_sp.groupby(["Years", "SERIES"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        old_series_sp = date_frame_sd_sp.groupby(["Years", "SERIES"], as_index= False)["Purchases_Qty"].sum()
         filtre_series_sd_sp = old_series_sp[old_series_sp["Years"] == ans]
-        fig_series_sd_sp = px.bar(filtre_series_sd_sp, x="SERIES", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Series for year {ans}", color="SERIES")
+        fig_series_sd_sp = px.bar(filtre_series_sd_sp, x="SERIES", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Series for year {ans}", color="SERIES")
         fig_series_sd_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_series_sd_sp)
 
         st.markdown("___")
 
-        old_market_sp = date_frame_sd_sp.groupby(["Years", "Market"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        old_market_sp = date_frame_sd_sp.groupby(["Years", "Market"], as_index= False)["Purchases_Qty"].sum()
         market_sd_sp = old_market_sp[old_market_sp["Years"] == ans]
-        fig_market_sd_sp = px.bar(market_sd_sp, x="Market", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Series for year {ans}", color="Market")
+        fig_market_sd_sp = px.bar(market_sd_sp, x="Market", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Series for year {ans}", color="Market")
         fig_market_sd_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_market_sd_sp)
 
@@ -1669,25 +1669,25 @@ if file_sd_sp is not None:
 
 
     with keyf:
-        city_sp_sd = date_frame_sd_sp.groupby(["Years", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        city_sp_sd = date_frame_sd_sp.groupby(["Years", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_city_sp_sd = city_sp_sd[city_sp_sd["Years"] == ans_last]
-        fig_city_sp_sd = px.bar(filtre_city_sp_sd, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by models for year {ans_last}", color="Products")
+        fig_city_sp_sd = px.bar(filtre_city_sp_sd, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by models for year {ans_last}", color="Products")
         fig_city_sp_sd.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city_sp_sd)
 
         st.markdown("___")
 
-        recent_series_sd = date_frame_sd_sp.groupby(["Years", "SERIES"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        recent_series_sd = date_frame_sd_sp.groupby(["Years", "SERIES"], as_index= False)["Purchases_Qty"].sum()
         sery = recent_series_sd[recent_series_sd["Years"] == ans_last]
-        fig_series_sd_sp2 = px.bar(sery, x="SERIES", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Series for year {ans_last}", color="SERIES")
+        fig_series_sd_sp2 = px.bar(sery, x="SERIES", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Series for year {ans_last}", color="SERIES")
         fig_series_sd_sp2.update_traces(textposition = 'outside')
         st.plotly_chart(fig_series_sd_sp2)
 
         st.markdown("___")
 
-        recent_market_sd = date_frame_sd_sp.groupby(["Years", "Market"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        recent_market_sd = date_frame_sd_sp.groupby(["Years", "Market"], as_index= False)["Purchases_Qty"].sum()
         market_sp = recent_market_sd[recent_market_sd["Years"] == ans_last]
-        fig_market_sd_sp2 = px.bar(market_sp, x="Market", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation by Market for year {ans_last}", color="Market")
+        fig_market_sd_sp2 = px.bar(market_sp, x="Market", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation by Market for year {ans_last}", color="Market")
         fig_market_sd_sp2.update_traces(textposition = 'outside')
         st.plotly_chart(fig_market_sd_sp2)
 
@@ -1703,23 +1703,23 @@ if file_sd_sp is not None:
     cog, coh = st.columns(2)
 
     with cog:
-        subDealer_sp = date_frame_sd_sp.groupby(["Years", "Customers Name"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        subDealer_sp = date_frame_sd_sp.groupby(["Years", "Customers_Name"], as_index= False)["Purchases_Qty"].sum()
         filtre_subDealer_sp = subDealer_sp[subDealer_sp["Years"] == ans]
-        fig_subDealer_sp = px.bar(filtre_subDealer_sp, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation for year {ans}", color="Customers Name")
+        fig_subDealer_sp = px.bar(filtre_subDealer_sp, x="Customers_Name", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation for year {ans}", color="Customers_Name")
         fig_subDealer_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_subDealer_sp)
 
     with coh:
-        sd_sp = date_frame_sd_sp.groupby(["Years", "Customers Name"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sd_sp = date_frame_sd_sp.groupby(["Years", "Customers_Name"], as_index= False)["Purchases_Qty"].sum()
         filtre_sd_sp = sd_sp[sd_sp["Years"] == ans_last]
-        fig_sd_sp = px.bar(filtre_sd_sp, x="Customers Name", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Sub-dealers purchase Situation for year {ans_last}", color="Customers Name")
+        fig_sd_sp = px.bar(filtre_sd_sp, x="Customers_Name", y="Purchases_Qty", text="Purchases_Qty", title= f"Sub-dealers purchase Situation for year {ans_last}", color="Customers_Name")
         fig_sd_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sd_sp)
     
     ###
     # Comparer les achats par client
     donneer_client = date_frame_sd_sp.copy()
-    clients_sd = donneer_client["Customers Name"].unique()
+    clients_sd = donneer_client["Customers_Name"].unique()
 
     ######################
     # Select customer
@@ -1730,10 +1730,10 @@ if file_sd_sp is not None:
     ### Yearly Purchase
     st.subheader("Yearly Purchase")
     
-    ans_client =  dataset_sd_sp[dataset_sd_sp["Customers Name"] == select_sd_sp]
-    choix_client = ans_client.groupby(["Customers Name", "Years"], as_index= False)["Purchases Qty (Pcs)"].sum()
+    ans_client =  dataset_sd_sp[dataset_sd_sp["Customers_Name"] == select_sd_sp]
+    choix_client = ans_client.groupby(["Customers_Name", "Years"], as_index= False)["Purchases_Qty"].sum()
     
-    fig_ans = px.line(choix_client, x="Years", y="Purchases Qty (Pcs)", title=f"yearly purchase for {select_sd_sp} ", text="Purchases Qty (Pcs)")
+    fig_ans = px.line(choix_client, x="Years", y="Purchases_Qty", title=f"yearly purchase for {select_sd_sp} ", text="Purchases_Qty")
     fig_ans.update_traces(textposition = 'top center')
     st.plotly_chart(fig_ans)
 
@@ -1747,9 +1747,9 @@ if file_sd_sp is not None:
     sd_yearsMonth = st.multiselect("Select your favorite years", mois)
 
     # Data Filtrage
-    mois_st = ans_client.groupby(["Years", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum()
+    mois_st = ans_client.groupby(["Years", "Date"], as_index= False)["Purchases_Qty"].sum()
     filter_moisons = mois_st[mois_st["Years"].isin(sd_yearsMonth)]
-    fig_mois = px.line(filter_moisons, x="Date", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title="Monthly purchase")
+    fig_mois = px.line(filter_moisons, x="Date", y="Purchases_Qty", text="Purchases_Qty", title="Monthly purchase")
     fig_mois.update_traces(textposition = 'top center')
     st.plotly_chart(fig_mois)  
 
@@ -1759,21 +1759,21 @@ if file_sd_sp is not None:
     coli, colj = st.columns(2)
 
     with coli :
-        sub_dealerx = date_frame_sd_sp.groupby(["Years", "Customers Name", "Products"], as_index= False)["Purchases Qty (Pcs)"].sum()
+        sub_dealerx = date_frame_sd_sp.groupby(["Years", "Customers_Name", "Products"], as_index= False)["Purchases_Qty"].sum()
         filtre_sub_dealer = sub_dealerx[sub_dealerx["Years"] == ans] # Definir l'annee
         
-        filter_client =  filtre_sub_dealer[filtre_sub_dealer["Customers Name"] == select_sd_sp]
+        filter_client =  filtre_sub_dealer[filtre_sub_dealer["Customers_Name"] == select_sd_sp]
         
-        fig_sub_dealer = px.bar(filter_client, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Purchase situation of {select_sd_sp} for year {ans}", color="Products")
+        fig_sub_dealer = px.bar(filter_client, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Purchase situation of {select_sd_sp} for year {ans}", color="Products")
         fig_sub_dealer.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sub_dealer)
 
     with colj :
         
         filtre_sub_client = sub_dealerx[sub_dealerx["Years"] == ans_last] # Definir l'annee
-        filter_custo =  filtre_sub_client[filtre_sub_client["Customers Name"] == select_sd_sp]
+        filter_custo =  filtre_sub_client[filtre_sub_client["Customers_Name"] == select_sd_sp]
         
-        fig_sub_custo = px.bar(filter_custo, x="Products", y="Purchases Qty (Pcs)", text="Purchases Qty (Pcs)", title= f"Purchase situation of {select_sd_sp} for year {ans_last}", color="Products")
+        fig_sub_custo = px.bar(filter_custo, x="Products", y="Purchases_Qty", text="Purchases_Qty", title= f"Purchase situation of {select_sd_sp} for year {ans_last}", color="Products")
         fig_sub_custo.update_traces(textposition = 'outside')
         st.plotly_chart(fig_sub_custo)
 
@@ -1793,8 +1793,8 @@ if file_sd_sp is not None:
     st.success(f"{len(dataset_sd_sp)} lignes de données chargées avec succès ✅")
 
     # Regrouper les ventes par mois
-    prediction_sd_sp = dataset_sd_sp.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
-    prediction_sd_sp = prediction_sd_sp.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+    prediction_sd_sp = dataset_sd_sp.groupby("Date")["Purchases_Qty"].sum().reset_index()
+    prediction_sd_sp = prediction_sd_sp.rename(columns={"Date":"ds", "Purchases_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
 
     # Modèle Prophet
     purchases_sd_sp = Prophet()
@@ -1841,8 +1841,8 @@ if file_sd_sp is not None:
 
     # Filtrage des donnees en fonction de la selection
     sd_series_choose_sp = dataset_sd_sp[dataset_sd_sp["SERIES"].isin(select_series_all_sp)]
-    sd_serie_sp = sd_series_choose_sp.groupby("Date")["Purchases Qty (Pcs)"].sum().reset_index()
-    sd_serie_sp = sd_serie_sp.rename(columns={"Date": "ds", "Purchases Qty (Pcs)": "y"})
+    sd_serie_sp = sd_series_choose_sp.groupby("Date")["Purchases_Qty"].sum().reset_index()
+    sd_serie_sp = sd_serie_sp.rename(columns={"Date": "ds", "Purchases_Qty": "y"})
 
     series_forecast_sp_sd = Prophet()
     series_forecast_sp_sd.fit(sd_serie_sp)
@@ -1869,15 +1869,15 @@ if file_sd_sp is not None:
     st.subheader("3. 📊Cities Forecasts")
 
     # Vérifier les colonnes requises
-    required_colms_SD = {"Cities", "Date", "Purchases Qty (Pcs)"}
+    required_colms_SD = {"Cities", "Date", "Purchases_Qty"}
     if not required_colms_SD.issubset(dataset_sd_sp.columns):
         st.error(f"The file must contain the columns : {', '.join(required_colms_SD)}")
         st.stop()
     
     # Préparer les données
     
-    date_ville_SD = dataset_sd_sp.groupby(["Cities", "Date"], as_index= False)["Purchases Qty (Pcs)"].sum() 
-    date_ville_SD = date_ville_SD.rename(columns={"Date":"ds", "Purchases Qty (Pcs)":"y"})
+    date_ville_SD = dataset_sd_sp.groupby(["Cities", "Date"], as_index= False)["Purchases_Qty"].sum() 
+    date_ville_SD = date_ville_SD.rename(columns={"Date":"ds", "Purchases_Qty":"y"})
     date_ville_SD["ds"] = pd.to_datetime(date_ville_SD["ds"])
 
     cities_SD = sorted(dataset_sd_sp["Cities"].unique())
