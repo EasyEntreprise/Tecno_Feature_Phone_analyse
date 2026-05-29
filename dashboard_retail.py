@@ -97,7 +97,7 @@ if sale is not None:
     # ##################################### 
     
     # Suppresionn des colonnes de l'achat
-    cols_to_drop_inv = ["Brand", "Series",	"First Category", "Item", "Market Name", "Color", "Memory",	"Manpower Type", "Retailer ID",	"Retailer Name", "Public ID", "Shop Type",	"Shop Grade",	"Image Type", "Sales Region 1",	"Sales Region 4", "Sales Region 5", "Remark"] # Suppresion des colonnes de la couverture
+    cols_to_drop_inv = ["Brand", "Series",	"First Category", "Item", "Market Name", "Color", "Memory",	"Manpower Type", "Retailer ID",	"Retailer Name", "Public ID", "Shop_Type",	"Shop Grade",	"Image Type", "Sales Region 1",	"Sales Region 4", "Sales Region 5", "Remark"] # Suppresion des colonnes de la couverture
     
     # Ne garder que les colonnes qui existent réellement pour la couverture :
     cols_to_drop_inv = [inv for inv in cols_to_drop_inv if inv in couverture.columns]
@@ -129,9 +129,9 @@ if sale is not None:
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Mbanza-Ngungu", "KONGO CENTRALE", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Big Equateur", "BIG EQUATOR", couverture_dr["Region"])
     couverture_dr["Region"] = np.where(couverture_dr["Region"] == "Kinshasa", "KINSHASA", couverture_dr["Region"])
-    couverture_dr["SP/FP"]  = np.where(couverture_dr["SP/FP"] == "PAD", "Smart", couverture_dr["SP/FP"])
-    couverture_dr["SP/FP"]  = np.where(couverture_dr["SP/FP"] == "Pad", "Smart", couverture_dr["SP/FP"])
-    couverture_dr["SP/FP"]  = couverture_dr["SP/FP"].fillna("Accessories")
+    couverture_dr["SP_FP"]  = np.where(couverture_dr["SP_FP"] == "PAD", "Smart", couverture_dr["SP_FP"])
+    couverture_dr["SP_FP"]  = np.where(couverture_dr["SP_FP"] == "Pad", "Smart", couverture_dr["SP_FP"])
+    couverture_dr["SP_FP"]  = couverture_dr["SP_FP"].fillna("Accessories")
 
     
     # Select Date
@@ -164,7 +164,7 @@ if sale is not None:
     if select_categories == "ALL":
         date_frame = select_date
     else:
-        date_frame = select_date[select_date["Shop Type"] == select_categories]
+        date_frame = select_date[select_date["Shop_Type"] == select_categories]
     
     date_frame_all = select_date.copy()
     
@@ -183,8 +183,8 @@ if sale is not None:
     col1, col2 = st.columns(2)
 
     with col1 :
-        sales_sp = date_frame[date_frame["SP/FP"] == "Smart"]
-        sales_fp = date_frame[date_frame["SP/FP"] == "Feature"]
+        sales_sp = date_frame[date_frame["SP_FP"] == "Smart"]
+        sales_fp = date_frame[date_frame["SP_FP"] == "Feature"]
         gen_sales_sp = sales_sp["Sales Qty"].sum()
         gen_sales_fp = sales_fp["Sales Qty"].sum()
 
@@ -192,8 +192,8 @@ if sale is not None:
         
 
     with col2 :
-        coverage_sp = couverture_dr[couverture_dr["SP/FP"] == "Smart"]
-        coverage_fp = couverture_dr[couverture_dr["SP/FP"] == "Feature"]
+        coverage_sp = couverture_dr[couverture_dr["SP_FP"] == "Smart"]
+        coverage_fp = couverture_dr[couverture_dr["SP_FP"] == "Feature"]
         gen_cov_sp = coverage_sp["Available Quantity"].sum()
         gen_cov_fp = coverage_fp["Available Quantity"].sum()
 
@@ -310,7 +310,7 @@ if sale is not None:
 
         ###
         st.subheader("1- Yearly Sales for SMART PHONE")
-        yearly_sales = date_frame[date_frame["SP/FP"] == "Smart"]
+        yearly_sales = date_frame[date_frame["SP_FP"] == "Smart"]
         yearly_sales = yearly_sales.groupby("Years", as_index= False)["Sales Qty"].sum()
 
         fig_years = px.line(yearly_sales, x="Years", y="Sales Qty", text="Sales Qty")
@@ -322,7 +322,7 @@ if sale is not None:
         ###
         st.subheader("3- Monthly Sales for SMART PHONE")
 
-        monthly_sales = date_frame[date_frame["SP/FP"] == "Smart"]
+        monthly_sales = date_frame[date_frame["SP_FP"] == "Smart"]
         monthly_sales = monthly_sales.groupby("Months", as_index= False)["Sales Qty"].sum()
 
         fig_month = px.line(monthly_sales, x="Months", y="Sales Qty", text="Sales Qty")
@@ -334,7 +334,7 @@ if sale is not None:
         ###
         st.subheader("5- Sales by regions for SMART PHONE")
         
-        sales = date_frame[date_frame["SP/FP"] == "Smart"]
+        sales = date_frame[date_frame["SP_FP"] == "Smart"]
         regions_sales = sales.groupby("Region", as_index= False)["Sales Qty"].sum()
 
         fig_region = px.bar(regions_sales, x="Region", y="Sales Qty", text="Sales Qty", color="Region")
@@ -346,7 +346,7 @@ if sale is not None:
         ###
         st.subheader("7- Coverage by regions for SMART PHONE")
 
-        cover = couverture_dr[couverture_dr["SP/FP"] == "Smart"]
+        cover = couverture_dr[couverture_dr["SP_FP"] == "Smart"]
         regions_cover = cover.groupby("Region", as_index= False)["Available Quantity"].sum()
 
         fig_region_cover = px.bar(regions_cover, x="Region", y="Available Quantity", text="Available Quantity", color="Region")
@@ -358,7 +358,7 @@ if sale is not None:
         ####
         st.subheader("9- Sales by models for SMART PHONE")
         
-        smart = date_frame[date_frame["SP/FP"] == "Smart"]
+        smart = date_frame[date_frame["SP_FP"] == "Smart"]
         choose_region = smart["Region"].unique()
         # Selectionner une region
         selected_region = st.selectbox("Choose your region for sales", choose_region) # On selectionne une region
@@ -379,7 +379,7 @@ if sale is not None:
         ####
         st.subheader("11- Coverage by models for SMART PHONE")
 
-        smart_cov = couverture_dr[couverture_dr["SP/FP"] == "Smart"]
+        smart_cov = couverture_dr[couverture_dr["SP_FP"] == "Smart"]
         cov_region = smart_cov["Region"].unique()
         select_region_cov = st.selectbox("Choose your region coverage", cov_region) # On selectionne une region
         region_cover = smart_cov[smart_cov["Region"] == select_region_cov]
@@ -415,11 +415,11 @@ if sale is not None:
         
         
         ###
-        st.subheader("17- Regional Manager sales for SMART PHONE")
+        st.subheader("17- Regional_Manager sales for SMART PHONE")
         # Graphic en Pie
-        rm = smart.groupby("Regional Manager", as_index= False)["Sales Qty"].sum()
+        rm = smart.groupby("Regional_Manager", as_index= False)["Sales Qty"].sum()
         st.write(rm)
-        graph_rm_pie = go.Figure(data=[go.Pie(labels= rm["Regional Manager"], values= rm["Sales Qty"], opacity= 0.5)])
+        graph_rm_pie = go.Figure(data=[go.Pie(labels= rm["Regional_Manager"], values= rm["Sales Qty"], opacity= 0.5)])
         graph_rm_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(graph_rm_pie)
         
@@ -428,14 +428,14 @@ if sale is not None:
         ####
         st.subheader("19- Type Shops sales for SMART PHONE")
 
-        type_shops = smart.groupby("Shop Type", as_index= False)["Sales Qty"].sum()
+        type_shops = smart.groupby("Shop_Type", as_index= False)["Sales Qty"].sum()
 
-        fig_dize_sept = px.bar(type_shops, x="Shop Type", y="Sales Qty", text="Sales Qty", color="Shop Type")
+        fig_dize_sept = px.bar(type_shops, x="Shop_Type", y="Sales Qty", text="Sales Qty", color="Shop_Type")
         fig_dize_sept.update_traces(textposition = 'outside')
         st.plotly_chart(fig_dize_sept)
         st.markdown("___")
 
-        graph_type_sp = go.Figure(data=[go.Pie(labels= type_shops["Shop Type"], values= type_shops["Sales Qty"], title="Proportion sales by shops type for SP", opacity= 0.5)])
+        graph_type_sp = go.Figure(data=[go.Pie(labels= type_shops["Shop_Type"], values= type_shops["Sales Qty"], title="Proportion sales by shops type for SP", opacity= 0.5)])
         graph_type_sp.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(graph_type_sp)
         st.markdown("___")
@@ -444,7 +444,7 @@ if sale is not None:
     with colb :
         ###
         st.subheader("2- Yearly Sales for FEATURE PHONE")
-        yearly_salesFP = date_frame[date_frame["SP/FP"] == "Feature"]
+        yearly_salesFP = date_frame[date_frame["SP_FP"] == "Feature"]
         yearly_sales_fp = yearly_salesFP.groupby("Years", as_index= False)["Sales Qty"].sum()
         
         fig_years_fpx = px.line(yearly_sales_fp, x="Years", y="Sales Qty", text="Sales Qty")
@@ -456,7 +456,7 @@ if sale is not None:
         ###
         st.subheader("4- Monthly Sales for FEATURE PHONE")
 
-        monthly_salesFP = date_frame[date_frame["SP/FP"] == "Feature"]
+        monthly_salesFP = date_frame[date_frame["SP_FP"] == "Feature"]
         monthly_sales_fp = monthly_salesFP.groupby("Months", as_index= False)["Sales Qty"].sum()
 
         fig_month_fp = px.line(monthly_sales_fp, x="Months", y="Sales Qty", text="Sales Qty")
@@ -468,7 +468,7 @@ if sale is not None:
         ###
         st.subheader("6- Sales by regions for FEATURE PHONE")
 
-        salesFP = date_frame[date_frame["SP/FP"] == "Feature"]
+        salesFP = date_frame[date_frame["SP_FP"] == "Feature"]
         regions_sales_fp = salesFP.groupby("Region", as_index= False)["Sales Qty"].sum()
 
         fig_region_fp = px.bar(regions_sales_fp, x="Region", y="Sales Qty", text="Sales Qty", color="Region")
@@ -480,7 +480,7 @@ if sale is not None:
         ###
         st.subheader("8- Coverage by regions for FEATURE PHONE")
 
-        coverFP = couverture_dr[couverture_dr["SP/FP"] == "Feature"]
+        coverFP = couverture_dr[couverture_dr["SP_FP"] == "Feature"]
         regions_cover_fp = coverFP.groupby("Region", as_index= False)["Available Quantity"].sum()
 
         fig_region_cover_fp = px.bar(regions_cover_fp, x="Region", y="Available Quantity", text="Available Quantity", color="Region")
@@ -492,7 +492,7 @@ if sale is not None:
         ###
         st.subheader("10- Sales by models for FEATURE PHONE")
 
-        feature = date_frame[date_frame["SP/FP"] == "Feature"]
+        feature = date_frame[date_frame["SP_FP"] == "Feature"]
         fp_region = feature["Region"].unique()
         selected_regionFP = st.selectbox("Choose your region for sales", fp_region, key="fp_region") # On selectionne une region
         region_choose_fp = feature[feature["Region"] == selected_regionFP]
@@ -510,7 +510,7 @@ if sale is not None:
         ###
         st.subheader("12- Coverage by models for FEATURE PHONE")
 
-        feature_cov_dix = couverture_dr[couverture_dr["SP/FP"] == "Feature"]
+        feature_cov_dix = couverture_dr[couverture_dr["SP_FP"] == "Feature"]
         cov_region_fp_dix = feature_cov_dix["Region"].unique()
         fp_region_cov_dix = st.selectbox("Choose your region coverage", cov_region_fp_dix) # On selectionne une region
         region_cover_fp_dix = feature_cov_dix[feature_cov_dix["Region"] == fp_region_cov_dix]
@@ -544,11 +544,11 @@ if sale is not None:
         st.markdown("___")
         
         ###
-        st.subheader("18- Regional Manager sales for FEATURE PHONE")
+        st.subheader("18- Regional_Manager sales for FEATURE PHONE")
         # Graphic en Pie
-        rm_fp = feature.groupby("Regional Manager", as_index= False)["Sales Qty"].sum()
+        rm_fp = feature.groupby("Regional_Manager", as_index= False)["Sales Qty"].sum()
         st.write(rm_fp)
-        graph_rmFP_pie = go.Figure(data=[go.Pie(labels= rm_fp["Regional Manager"], values= rm_fp["Sales Qty"], opacity= 0.5)])
+        graph_rmFP_pie = go.Figure(data=[go.Pie(labels= rm_fp["Regional_Manager"], values= rm_fp["Sales Qty"], opacity= 0.5)])
         graph_rmFP_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(graph_rmFP_pie, key="pie1")
         
@@ -557,15 +557,15 @@ if sale is not None:
 
         st.subheader("20- Type Shops sales for FEATURE PHONE")
 
-        type_shops_fp = feature.groupby("Shop Type", as_index= False)["Sales Qty"].sum()
+        type_shops_fp = feature.groupby("Shop_Type", as_index= False)["Sales Qty"].sum()
 
-        fig_dize_huit = px.bar(type_shops_fp, x="Shop Type", y="Sales Qty", text="Sales Qty", color="Shop Type")
+        fig_dize_huit = px.bar(type_shops_fp, x="Shop_Type", y="Sales Qty", text="Sales Qty", color="Shop_Type")
         fig_dize_huit.update_traces(textposition = 'outside')
         st.plotly_chart(fig_dize_huit)
 
         st.markdown("___")
 
-        graph_type_fp = go.Figure(data=[go.Pie(labels= type_shops_fp["Shop Type"], values= type_shops_fp["Sales Qty"], title="Proportion sales by shops type for FP", opacity= 0.5)])
+        graph_type_fp = go.Figure(data=[go.Pie(labels= type_shops_fp["Shop_Type"], values= type_shops_fp["Sales Qty"], title="Proportion sales by shops type for FP", opacity= 0.5)])
         graph_type_fp.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(graph_type_fp)
         st.markdown("___")
@@ -582,12 +582,12 @@ if sale is not None:
     ## 1- Regional Manager
     #####
 
-    st.subheader("A- Profil Regional Manager")
+    st.subheader("A- Profil Regional_Manager")
 
-    regional_select = date_frame_all["Regional Manager"].unique()
+    regional_select = date_frame_all["Regional_Manager"].unique()
 
-    selected_regional = st.selectbox("Choose your Regional Manager : ", regional_select)
-    regional_dataset = date_frame_all[date_frame_all["Regional Manager"] == selected_regional]
+    selected_regional = st.selectbox("Choose your Regional_Manager : ", regional_select)
+    regional_dataset = date_frame_all[date_frame_all["Regional_Manager"] == selected_regional]
 
     ################
     ## DATA METRIC
@@ -604,7 +604,7 @@ if sale is not None:
         
     with cole:
         # Nombre des staffs
-        rm_nbrStaff = regional_dataset["Supervisor Name"].nunique()
+        rm_nbrStaff = regional_dataset["Supervisor_Name"].nunique()
         st.metric(label= "Total Staffs", value= rm_nbrStaff)
 
     
@@ -612,12 +612,12 @@ if sale is not None:
     colx1, colx2 = st.columns(2)
     
     with colx1 :
-        sp_dataset = regional_dataset[regional_dataset["SP/FP"] == "Smart"]
+        sp_dataset = regional_dataset[regional_dataset["SP_FP"] == "Smart"]
         sp = sp_dataset["Sales Qty"].sum()
         st.metric(label = "Sales of SMART PHONE", value= f"{sp} PCS")
 
     with colx2 :
-        fp_dataset = regional_dataset[regional_dataset["SP/FP"] == "Feature"]
+        fp_dataset = regional_dataset[regional_dataset["SP_FP"] == "Feature"]
         fp = fp_dataset["Sales Qty"].sum()
         st.metric(label = "Sales of FEATURE PHONE", value= f"{fp} PCS")
 
@@ -629,7 +629,7 @@ if sale is not None:
     a1, b2 = st.columns(2)
     with a1 :
         st.subheader("1- Yearly sales for SMART PHONE")
-        regional_dataset_sp = regional_dataset[regional_dataset["SP/FP"] == "Smart"]
+        regional_dataset_sp = regional_dataset[regional_dataset["SP_FP"] == "Smart"]
         rm_yearly = regional_dataset_sp.groupby("Years", as_index= False)["Sales Qty"].sum()
         
         fig_rm_years_sp = px.line(rm_yearly, x="Years", y="Sales Qty", text= "Sales Qty")
@@ -670,16 +670,16 @@ if sale is not None:
         st.markdown("___")
 
         st.subheader("11- Sales by Staffs for SMART PHONE")
-        rm_staffs_sp = regional_dataset_sp.groupby("Supervisor Name", as_index= False)["Sales Qty"].sum()
+        rm_staffs_sp = regional_dataset_sp.groupby("Supervisor_Name", as_index= False)["Sales Qty"].sum()
         
-        fig_staffs_sp = px.bar(rm_staffs_sp, x="Supervisor Name", y="Sales Qty", text= "Sales Qty", color= "Supervisor Name")
+        fig_staffs_sp = px.bar(rm_staffs_sp, x="Supervisor_Name", y="Sales Qty", text= "Sales Qty", color= "Supervisor_Name")
         fig_staffs_sp.update_traces(textposition= 'outside')
         st.plotly_chart(fig_staffs_sp)
         st.markdown("___")
 
     with b2 :
         st.subheader("2- Yearly sales for FEATURE PHONE")
-        regional_dataset_fp = regional_dataset[regional_dataset["SP/FP"] == "Feature"]
+        regional_dataset_fp = regional_dataset[regional_dataset["SP_FP"] == "Feature"]
         rm_yearly_fp = regional_dataset_fp.groupby("Years", as_index= False)["Sales Qty"].sum()
         
         fig_rm_years_fp = px.line(rm_yearly_fp, x="Years", y="Sales Qty", text= "Sales Qty")
@@ -720,9 +720,9 @@ if sale is not None:
         st.markdown("___")
 
         st.subheader("12- Sales by Staffs for FEATURE PHONE")
-        rm_staffs_fp = regional_dataset_fp.groupby("Supervisor Name", as_index= False)["Sales Qty"].sum()
+        rm_staffs_fp = regional_dataset_fp.groupby("Supervisor_Name", as_index= False)["Sales Qty"].sum()
         
-        fig_staffs_fp = px.bar(rm_staffs_fp, x="Supervisor Name", y="Sales Qty", text= "Sales Qty", color= "Supervisor Name")
+        fig_staffs_fp = px.bar(rm_staffs_fp, x="Supervisor_Name", y="Sales Qty", text= "Sales Qty", color= "Supervisor_Name")
         fig_staffs_fp.update_traces(textposition= 'outside')
         st.plotly_chart(fig_staffs_fp)
         st.markdown("___")
@@ -736,9 +736,9 @@ if sale is not None:
     #####
     st.subheader("B- Profil Suppervisors & Promotors")
 
-    supervisor_select = date_frame_all["Supervisor Name"].unique()
+    supervisor_select = date_frame_all["Supervisor_Name"].unique()
     supervisor_selected = st.selectbox("Choose your Supervisor/Promoter and Tempory promoter name : ", supervisor_select)
-    supervisor_dataset = date_frame_all[date_frame_all["Supervisor Name"] == supervisor_selected]
+    supervisor_dataset = date_frame_all[date_frame_all["Supervisor_Name"] == supervisor_selected]
 
     ################
     ## DATA METRIC
@@ -764,12 +764,12 @@ if sale is not None:
     coly1, coly2 = st.columns(2)
     
     with coly1 :
-        sp_dataset_sr = supervisor_dataset[supervisor_dataset["SP/FP"] == "Smart"]
+        sp_dataset_sr = supervisor_dataset[supervisor_dataset["SP_FP"] == "Smart"]
         sp_sr = sp_dataset_sr["Sales Qty"].sum()
         st.metric(label = "Sales of SMART PHONE", value= f"{sp_sr} PCS")
 
     with coly2 :
-        fp_dataset_sr = supervisor_dataset[supervisor_dataset["SP/FP"] == "Feature"]
+        fp_dataset_sr = supervisor_dataset[supervisor_dataset["SP_FP"] == "Feature"]
         fp_sr = fp_dataset_sr["Sales Qty"].sum()
         st.metric(label = "Sales of FEATURE PHONE", value= f"{fp_sr} PCS")
         
@@ -880,17 +880,17 @@ if sale is not None:
 
     with colj1:
         # Name
-        st.metric(label="Shop Name", value= shops_selected)
+        st.metric(label="Shop_Name", value= shops_selected)
         
     with colj2:
         # Regional Name
-        rm_sr = shops_dataset["Regional Manager"]
+        rm_sr = shops_dataset["Regional_Manager"]
         st.metric(label="RM name/Responsible", value= rm_sr.loc[shops_dataset.index[0]])
         
 
     with colj3:
         # Superviseur Name
-        fsm_pr = shops_dataset["Supervisor Name"]
+        fsm_pr = shops_dataset["Supervisor_Name"]
         st.metric(label="Manage by", value= fsm_pr.loc[shops_dataset.index[0]])
 
     with colj4:
@@ -908,17 +908,17 @@ if sale is not None:
     coly3, coly4 = st.columns(2)
     
     with coly3 :
-        sp_dataset_shops = shops_dataset[shops_dataset["SP/FP"] == "Smart"]
+        sp_dataset_shops = shops_dataset[shops_dataset["SP_FP"] == "Smart"]
         sp_shops = sp_dataset_shops["Sales Qty"].sum()
         st.metric(label = "Sales of SMART PHONE", value= sp_shops)
 
     with coly4 :
-        fp_dataset_shops = shops_dataset[shops_dataset["SP/FP"] == "Feature"]
+        fp_dataset_shops = shops_dataset[shops_dataset["SP_FP"] == "Feature"]
         fp_shops = fp_dataset_shops["Sales Qty"].sum()
         st.metric(label = "Sales of FEATURE PHONE", value= fp_shops)
         
-    shops_couvert_sp = couverture[couverture["SP/FP"] == "Smart"]
-    shops_couvert_fp = couverture[couverture["SP/FP"] == "Feature"]
+    shops_couvert_sp = couverture[couverture["SP_FP"] == "Smart"]
+    shops_couvert_fp = couverture[couverture["SP_FP"] == "Feature"]
 
 
     ################
@@ -952,7 +952,7 @@ if sale is not None:
 
         st.subheader("7- Coverage models by shops for SMART PHONE")
 
-        shops_choisi_sp = shops_couvert_sp[shops_couvert_sp["Shop Name"] == shops_selected]
+        shops_choisi_sp = shops_couvert_sp[shops_couvert_sp["Shop_Name"] == shops_selected]
         
         sr_shops_cover_sp = shops_choisi_sp.groupby(["Model"], as_index= False)["Available Quantity"].sum()
         fig_shops_models_sp = px.bar(sr_shops_cover_sp, x="Model", y="Available Quantity", text= "Available Quantity", color="Model")
@@ -987,7 +987,7 @@ if sale is not None:
 
         st.subheader("8- Coverage models by shops for SMART PHONE")
 
-        shops_choisi_fp = shops_couvert_fp[shops_couvert_fp["Shop Name"] == shops_selected]
+        shops_choisi_fp = shops_couvert_fp[shops_couvert_fp["Shop_Name"] == shops_selected]
 
         sr_shops_cover_fp = shops_choisi_fp.groupby(["Model"], as_index= False)["Available Quantity"].sum()
         fig_shops_models_fp = px.bar(sr_shops_cover_fp, x="Model", y="Available Quantity", text= "Available Quantity", color="Model")

@@ -10,6 +10,7 @@ from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 import time
 
 
@@ -404,7 +405,9 @@ if file is not None:
 
     st.subheader("Target & Achievment", divider="rainbow")
 
-    view_2025 = date_frame[date_frame["Years"] == 2025] # dataset_full
+    annee_cour = datetime.now().year
+
+    view_2025 = dataset[dataset["Years"] == annee_cour] # dataset_full
     target_2025 = view_2025.groupby("Months", as_index= False)["Purchased_Qty"].sum()
 
     def creer_target_si_un_mois(target_2025):

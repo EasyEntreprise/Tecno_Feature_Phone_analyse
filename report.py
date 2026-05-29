@@ -94,7 +94,7 @@ if file_st_fp is not None:
     # Traitement des valeurs null
    
     #dataset_st = dataset_full_st.dropna() # Supprimer les valeurs null
-    dataset_st = dataset_full_st.dropna(subset="Purchased Qty") # Mettre les valeurs null à '0'
+    dataset_st = dataset_full_st.dropna(subset="Purchased_Qty") # Mettre les valeurs null à '0'
 
     # Creation des dates
     col1, col2 = st.columns(2)
@@ -122,8 +122,8 @@ if file_st_fp is not None:
     # 1- Yearly buy
     ######
     
-    buy_st = dataset_st.groupby(["Years"], as_index= False)["Purchased Qty"].sum()
-    fig_buy = px.line(buy_st, x="Years", y="Purchased Qty", text="Purchased Qty", title="Yearly purchase")
+    buy_st = dataset_st.groupby(["Years"], as_index= False)["Purchased_Qty"].sum()
+    fig_buy = px.line(buy_st, x="Years", y="Purchased_Qty", text="Purchased_Qty", title="Yearly purchase")
     fig_buy.update_traces(textposition = 'top center')
     st.plotly_chart(fig_buy)
     st.markdown("___")
@@ -139,9 +139,9 @@ if file_st_fp is not None:
     select_years = st.multiselect("Select your years", years_selected) # default=[2024, 2025]
 
     # Data Filtrage 
-    month_st = dataset_st.groupby(["Years", "Months"], as_index= False)["Purchased Qty"].sum()
+    month_st = dataset_st.groupby(["Years", "Months"], as_index= False)["Purchased_Qty"].sum()
     filter = month_st[month_st["Years"].isin(select_years)]
-    fig_month = px.line(filter, x="Months", y="Purchased Qty", text="Purchased Qty", title="Monthly purchase")
+    fig_month = px.line(filter, x="Months", y="Purchased_Qty", text="Purchased_Qty", title="Monthly purchase")
     fig_month.update_traces(textposition = 'top center')
     st.plotly_chart(fig_month)
 
@@ -155,61 +155,61 @@ if file_st_fp is not None:
 
     with col3:
         annee = st.number_input("Write the old year")
-        weeks = date_frame_st.groupby(["Years", "Weeks"], as_index= False)["Purchased Qty"].sum()
+        weeks = date_frame_st.groupby(["Years", "Weeks"], as_index= False)["Purchased_Qty"].sum()
         filter_weeks = weeks[weeks["Years"]== annee]
 
         #----------------------------
-        recupMois_old_years = date_frame_st.groupby(["Weeks", "Date", "Years"])["Purchased Qty"].sum().reset_index()
+        recupMois_old_years = date_frame_st.groupby(["Weeks", "Date", "Years"])["Purchased_Qty"].sum().reset_index()
         filter_old_years = recupMois_old_years[recupMois_old_years["Years"]== annee]
-        db = filter_old_years.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+        db = filter_old_years.groupby("Weeks")["Purchased_Qty"].sum().reset_index() # Faire un group by sans index
         
         colv, colw = st.columns(2)
         with colv:
-            maximal = filter_old_years.loc[filter_old_years["Purchased Qty"].idxmax()]
+            maximal = filter_old_years.loc[filter_old_years["Purchased_Qty"].idxmax()]
             string_convert_max = str(maximal["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_max = string_convert_max.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Best weekly purchase (Pcs)", value=db["Purchased Qty"].max(), delta= string_convert_max[0])
+            st.metric(label="Best weekly purchase (Pcs)", value=db["Purchased_Qty"].max(), delta= string_convert_max[0])
             
 
         with colw:
-            minimal = filter_old_years.loc[filter_old_years["Purchased Qty"].idxmin()]
+            minimal = filter_old_years.loc[filter_old_years["Purchased_Qty"].idxmin()]
             string_convert_min = str(minimal["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_min = string_convert_min.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Bad weekly purchase (Pcs)", value=db["Purchased Qty"].min(), delta= string_convert_min[0]) # Afficher le metric de la semaine avec moins d'achats
+            st.metric(label="Bad weekly purchase (Pcs)", value=db["Purchased_Qty"].min(), delta= string_convert_min[0]) # Afficher le metric de la semaine avec moins d'achats
             
         #----------------------------
 
-        fig_week = px.line(filter_weeks, x="Weeks", y="Purchased Qty", title=f"Weekly {annee} purchase", text="Purchased Qty")
+        fig_week = px.line(filter_weeks, x="Weeks", y="Purchased_Qty", title=f"Weekly {annee} purchase", text="Purchased_Qty")
         fig_week.update_traces(textposition = 'top center')
         st.plotly_chart(fig_week)
 
     with col4 :
         weeks_enter = st.number_input("Write the year")
-        weeks_y = date_frame_st.groupby(["Years", "Weeks"], as_index= False)["Purchased Qty"].sum()
+        weeks_y = date_frame_st.groupby(["Years", "Weeks"], as_index= False)["Purchased_Qty"].sum()
         filter_weeks_y = weeks_y[weeks_y["Years"]== weeks_enter]
 
         #----------------------------
-        recupMois_new_years = date_frame_st.groupby(["Weeks", "Date", "Years"])["Purchased Qty"].sum().reset_index()
+        recupMois_new_years = date_frame_st.groupby(["Weeks", "Date", "Years"])["Purchased_Qty"].sum().reset_index()
         filter_new_years = recupMois_new_years[recupMois_new_years["Years"]== weeks_enter ]
-        db_new = filter_new_years.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+        db_new = filter_new_years.groupby("Weeks")["Purchased_Qty"].sum().reset_index() # Faire un group by sans index
         
         colx, coly = st.columns(2)
         with colx:
-            maximal_new = filter_new_years.loc[filter_new_years["Purchased Qty"].idxmax()]
+            maximal_new = filter_new_years.loc[filter_new_years["Purchased_Qty"].idxmax()]
             string_convert_max_new = str(maximal_new["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_max_new = string_convert_max_new.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Best weekly purchase (Pcs)", value=db_new["Purchased Qty"].max(), delta= string_convert_max_new[0])
+            st.metric(label="Best weekly purchase (Pcs)", value=db_new["Purchased_Qty"].max(), delta= string_convert_max_new[0])
             
 
         with coly:
-            minimal_new = filter_new_years.loc[filter_new_years["Purchased Qty"].idxmin()]
+            minimal_new = filter_new_years.loc[filter_new_years["Purchased_Qty"].idxmin()]
             string_convert_min_new = str(minimal_new["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_min_new = string_convert_min_new.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Bad weekly purchase (Pcs)", value=db_new["Purchased Qty"].min(), delta= string_convert_min_new[0]) # Afficher le metric de la semaine avec moins d'achats
+            st.metric(label="Bad weekly purchase (Pcs)", value=db_new["Purchased_Qty"].min(), delta= string_convert_min_new[0]) # Afficher le metric de la semaine avec moins d'achats
             
         #----------------------------
 
-        fig_week_y = px.line(filter_weeks_y, x="Weeks", y="Purchased Qty", title=f"Weekly {weeks_enter} purchase", text="Purchased Qty")
+        fig_week_y = px.line(filter_weeks_y, x="Weeks", y="Purchased_Qty", title=f"Weekly {weeks_enter} purchase", text="Purchased_Qty")
         fig_week_y.update_traces(textposition = 'top center')
         st.plotly_chart(fig_week_y)
 
@@ -226,30 +226,30 @@ if file_st_fp is not None:
 
     with col5:
         #models_year = st.number_input("Put the old year")
-        modeles = date_frame_st.groupby(["Years", "Products"], as_index= False)["Purchased Qty"].sum()
+        modeles = date_frame_st.groupby(["Years", "Products"], as_index= False)["Purchased_Qty"].sum()
         filter_mdl = modeles[modeles["Years"] == annee]
 
-        fig_mdl = px.bar(filter_mdl, x="Products", y="Purchased Qty", color="Products", text="Purchased Qty", title=f"Models purchased for {annee}")
+        fig_mdl = px.bar(filter_mdl, x="Products", y="Purchased_Qty", color="Products", text="Purchased_Qty", title=f"Models purchased for {annee}")
         fig_mdl.update_traces(textposition = 'outside')
         st.plotly_chart(fig_mdl)
 
         # Pie Chart
-        fig_mdl_pie = go.Figure(data=[go.Pie(labels= filter_mdl["Products"], values= filter_mdl["Purchased Qty"], title=f"Models proportion for {annee}", opacity= 0.5)])
+        fig_mdl_pie = go.Figure(data=[go.Pie(labels= filter_mdl["Products"], values= filter_mdl["Purchased_Qty"], title=f"Models proportion for {annee}", opacity= 0.5)])
         fig_mdl_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_mdl_pie)
 
 
     with col6 :
         
-        mdl = date_frame_st.groupby(["Years", "Products"], as_index= False)["Purchased Qty"].sum()
+        mdl = date_frame_st.groupby(["Years", "Products"], as_index= False)["Purchased_Qty"].sum()
         filter_model = mdl[mdl["Years"]== weeks_enter]
 
-        fig_model = px.bar(filter_model, x="Products", y="Purchased Qty", color="Products", text="Purchased Qty", title=f"Models purchased for {weeks_enter}")
+        fig_model = px.bar(filter_model, x="Products", y="Purchased_Qty", color="Products", text="Purchased_Qty", title=f"Models purchased for {weeks_enter}")
         fig_model.update_traces(textposition = 'outside')
         st.plotly_chart(fig_model)
 
         # Pie Chart
-        fig_model_pie = go.Figure(data=[go.Pie(labels= filter_model["Products"], values= filter_model["Purchased Qty"], title=f"Models proportion for {weeks_enter}", opacity= 0.5)])
+        fig_model_pie = go.Figure(data=[go.Pie(labels= filter_model["Products"], values= filter_model["Purchased_Qty"], title=f"Models proportion for {weeks_enter}", opacity= 0.5)])
         fig_model_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_model_pie)
 
@@ -262,16 +262,16 @@ if file_st_fp is not None:
     with col7:
         # Create Histogram for prices
 
-        date_groupby = date_frame_st.groupby(["Years", "Products", "Prices_usd"], as_index= False)["Purchased Qty"].sum()
+        date_groupby = date_frame_st.groupby(["Years", "Products", "Prices_usd"], as_index= False)["Purchased_Qty"].sum()
         prices_filter = date_groupby[date_groupby["Years"] == weeks_enter]
 
         # Create a histogram
-        fig_hist = px.histogram(prices_filter, x="Prices_usd", title="Distribution models on prices", hover_data=["Purchased Qty"])
+        fig_hist = px.histogram(prices_filter, x="Prices_usd", title="Distribution models on prices", hover_data=["Purchased_Qty"])
         st.plotly_chart(fig_hist)
 
 
     with col8 :
-        key_model = date_frame_st.groupby(["Years", "Products","Prices_usd"], as_index= False)["Purchased Qty"].sum()
+        key_model = date_frame_st.groupby(["Years", "Products","Prices_usd"], as_index= False)["Purchased_Qty"].sum()
         key_filter = key_model[key_model["Years"] == weeks_enter]
 
         fig_key = px.bar(key_filter, x="Products", y="Prices_usd", text="Prices_usd", title="Graphic Models and Prices", color="Products")
@@ -286,29 +286,29 @@ if file_st_fp is not None:
     col9, col0 = st.columns(2)
 
     with col9 :
-        city = date_frame_st.groupby(["Years", "City"], as_index= False)["Purchased Qty"].sum()
+        city = date_frame_st.groupby(["Years", "City"], as_index= False)["Purchased_Qty"].sum()
         city_years = city[city["Years"] == annee]
-        fig_city = px.bar(city_years, x="City", y="Purchased Qty", text="Purchased Qty", title=f"Situation of Channel Kin and Lushi for {annee}", color="City")
+        fig_city = px.bar(city_years, x="City", y="Purchased_Qty", text="Purchased_Qty", title=f"Situation of Channel Kin and Lushi for {annee}", color="City")
         fig_city.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city)
 
         st.markdown("___")
         # Pie Chart
-        fig_city_pie = go.Figure(data=[go.Pie(labels= city_years["City"], values= city_years["Purchased Qty"], title=f"Channel proportion for {annee}", opacity= 0.5)])
+        fig_city_pie = go.Figure(data=[go.Pie(labels= city_years["City"], values= city_years["Purchased_Qty"], title=f"Channel proportion for {annee}", opacity= 0.5)])
         fig_city_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_city_pie)
         
 
     with col0 :
-        #channel = date_frame_st.groupby(["Years", "City"], as_index= False)["Purchased Qty"].sum()
+        #channel = date_frame_st.groupby(["Years", "City"], as_index= False)["Purchased_Qty"].sum()
         channel = city[city["Years"] == weeks_enter]
-        fig_channel = px.bar(channel, x="City", y="Purchased Qty", text="Purchased Qty", title=f"Situation of Channel Kin and Lushi for {weeks_enter}", color="City")
+        fig_channel = px.bar(channel, x="City", y="Purchased_Qty", text="Purchased_Qty", title=f"Situation of Channel Kin and Lushi for {weeks_enter}", color="City")
         fig_channel.update_traces(textposition = 'outside')
         st.plotly_chart(fig_channel)
 
         st.markdown("___")
         # Pie Chart
-        fig_channel_pie = go.Figure(data=[go.Pie(labels= channel["City"], values= channel["Purchased Qty"], title=f"Channel proportion for {weeks_enter}", opacity= 0.5)])
+        fig_channel_pie = go.Figure(data=[go.Pie(labels= channel["City"], values= channel["Purchased_Qty"], title=f"Channel proportion for {weeks_enter}", opacity= 0.5)])
         fig_channel_pie.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_channel_pie)
 
@@ -319,7 +319,7 @@ if file_st_fp is not None:
     st.subheader("Target & Achievment", divider="grey")
 
     view_2025 = dataset_full_st[dataset_full_st["Years"] == 2025]
-    target_2025 = view_2025.groupby("Months", as_index= False)["Purchased Qty"].sum()
+    target_2025 = view_2025.groupby("Months", as_index= False)["Purchased_Qty"].sum()
 
     def creer_target_si_un_mois(target_2025):
         if target_2025["Months"].nunique() == 1:
@@ -371,9 +371,9 @@ if file_st_fp is not None:
     #-- Barre pour l'achievment ---
     fig_cmb.add_trace(go.Bar(
         x = target_2025["Months"],
-        y = target_2025["Purchased Qty"],
+        y = target_2025["Purchased_Qty"],
         name = "Achievment",
-        text = target_2025["Purchased Qty"],
+        text = target_2025["Purchased_Qty"],
         textposition= "auto", # il y a 'auto' 'outside' 'inside'
         marker_color = "skyblue"
     ))
@@ -419,8 +419,8 @@ if file_st_fp is not None:
     st.success(f"{len(dataset_st)} lignes de données chargées avec succès ✅")
 
     # Regrouper les ventes par mois
-    prediction_global = dataset_st.groupby("Months")["Purchased Qty"].sum().reset_index()
-    prediction_global = prediction_global.rename(columns={"Months":"ds", "Purchased Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+    prediction_global = dataset_st.groupby("Months")["Purchased_Qty"].sum().reset_index()
+    prediction_global = prediction_global.rename(columns={"Months":"ds", "Purchased_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased_Qty" en "y". Car Prophet ne reconnait que ces noms
 
     # Modèle Prophet
     purchases_global = Prophet()
@@ -466,15 +466,15 @@ if file_st_fp is not None:
     st.subheader("2. 📊City Forecasts")
 
     # Vérifier les colonnes requises
-    required_cols = {"City", "Months", "Purchased Qty"}
+    required_cols = {"City", "Months", "Purchased_Qty"}
     if not required_cols.issubset(dataset_st.columns):
         st.error(f"The file must contain the columns : {', '.join(required_cols)}")
         st.stop()
     
     # Préparer les données
     
-    date_ville = dataset_st.groupby(["City", "Months"], as_index= False)["Purchased Qty"].sum() 
-    date_ville = date_ville.rename(columns={"Months":"ds", "Purchased Qty":"y"})
+    date_ville = dataset_st.groupby(["City", "Months"], as_index= False)["Purchased_Qty"].sum() 
+    date_ville = date_ville.rename(columns={"Months":"ds", "Purchased_Qty":"y"})
     date_ville["ds"] = pd.to_datetime(date_ville["ds"])
 
     cities = sorted(dataset_st["City"].unique())
@@ -571,8 +571,8 @@ if file_st_fp is not None:
 
     # Filtrage des donnees en fonction de la selection
     st_models_choose_all = dataset_st[dataset_st["Products"].isin(select_models_all)]
-    st_models_all = st_models_choose_all.groupby("Months")["Purchased Qty"].sum().reset_index()
-    st_models_all = st_models_all.rename(columns={"Months": "ds", "Purchased Qty": "y"})
+    st_models_all = st_models_choose_all.groupby("Months")["Purchased_Qty"].sum().reset_index()
+    st_models_all = st_models_all.rename(columns={"Months": "ds", "Purchased_Qty": "y"})
 
     model_forecast_all = Prophet()
     model_forecast_all.fit(st_models_all)
@@ -935,7 +935,7 @@ if file_sd_fp is not None:
 
     # Regrouper les ventes par mois
     prediction_global = dataset_sd.groupby("Date")["Purchases_Qty"].sum().reset_index()
-    prediction_global = prediction_global.rename(columns={"Date":"ds", "Purchases_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+    prediction_global = prediction_global.rename(columns={"Date":"ds", "Purchases_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased_Qty" en "y". Car Prophet ne reconnait que ces noms
 
     # Modèle Prophet
     purchases_global = Prophet()
@@ -1121,7 +1121,7 @@ if file_st_sp is not None:
     # Traitement des valeurs null
    
     #dataset_st = dataset_full_st.dropna() # Supprimer les valeurs null
-    dataset_SP_st = dataset_full_SP_st.dropna(subset="Purchased Qty") # Mettre les valeurs null à '0'
+    dataset_SP_st = dataset_full_SP_st.dropna(subset="Purchased_Qty") # Mettre les valeurs null à '0'
 
     # Creation des dates
     col1a, col2a = st.columns(2)
@@ -1149,8 +1149,8 @@ if file_st_sp is not None:
     # 1- Yearly buy
     ######
     
-    buy_st = dataset_full_SP_st.groupby(["Years"], as_index= False)["Purchased Qty"].sum()
-    fig_buy = px.line(buy_st, x="Years", y="Purchased Qty", text="Purchased Qty", title="Yearly purchase")
+    buy_st = dataset_full_SP_st.groupby(["Years"], as_index= False)["Purchased_Qty"].sum()
+    fig_buy = px.line(buy_st, x="Years", y="Purchased_Qty", text="Purchased_Qty", title="Yearly purchase")
     fig_buy.update_traces(textposition = 'top center')
     st.plotly_chart(fig_buy)
     st.markdown("___")
@@ -1166,9 +1166,9 @@ if file_st_sp is not None:
     select_years_sp = st.multiselect("Select your years for SP data", years_selected_sp) # default=[2024, 2025]
 
     # Data Filtrage 
-    month_st_sp = dataset_SP_st.groupby(["Years", "Months"], as_index= False)["Purchased Qty"].sum()
+    month_st_sp = dataset_SP_st.groupby(["Years", "Months"], as_index= False)["Purchased_Qty"].sum()
     filter_sp = month_st_sp[month_st_sp["Years"].isin(select_years_sp)]
-    fig_month_sp = px.line(filter_sp, x="Months", y="Purchased Qty", text="Purchased Qty", title="Monthly purchase")
+    fig_month_sp = px.line(filter_sp, x="Months", y="Purchased_Qty", text="Purchased_Qty", title="Monthly purchase")
     fig_month_sp.update_traces(textposition = 'top center')
     st.plotly_chart(fig_month_sp)
 
@@ -1182,61 +1182,61 @@ if file_st_sp is not None:
 
     with col3a:
         annee_sp = st.number_input("Write the last year")
-        weeks_sp = dataset_SP_st.groupby(["Years", "Weeks"], as_index= False)["Purchased Qty"].sum()
+        weeks_sp = dataset_SP_st.groupby(["Years", "Weeks"], as_index= False)["Purchased_Qty"].sum()
         filter_weeks_sp = weeks_sp[weeks_sp["Years"]== annee_sp]
 
         #----------------------------
-        recupMois_old_years_sp = dataset_SP_st.groupby(["Weeks", "Date", "Years"])["Purchased Qty"].sum().reset_index()
+        recupMois_old_years_sp = dataset_SP_st.groupby(["Weeks", "Date", "Years"])["Purchased_Qty"].sum().reset_index()
         filter_old_years_sp = recupMois_old_years_sp[recupMois_old_years_sp["Years"]== annee_sp]
-        db = filter_old_years_sp.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+        db = filter_old_years_sp.groupby("Weeks")["Purchased_Qty"].sum().reset_index() # Faire un group by sans index
         
         colva, colwa = st.columns(2)
         with colva:
-            maximal_sp = filter_old_years_sp.loc[filter_old_years_sp["Purchased Qty"].idxmax()]
+            maximal_sp = filter_old_years_sp.loc[filter_old_years_sp["Purchased_Qty"].idxmax()]
             string_convert_max_sp = str(maximal_sp["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_max_sp = string_convert_max_sp.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Best weekly purchase (Pcs)", value=db["Purchased Qty"].max(), delta= string_convert_max_sp[0])
+            st.metric(label="Best weekly purchase (Pcs)", value=db["Purchased_Qty"].max(), delta= string_convert_max_sp[0])
             
 
         with colwa:
-            minimal_sp = filter_old_years_sp.loc[filter_old_years_sp["Purchased Qty"].idxmin()]
+            minimal_sp = filter_old_years_sp.loc[filter_old_years_sp["Purchased_Qty"].idxmin()]
             string_convert_min_sp = str(minimal_sp["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_min_sp = string_convert_min_sp.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Bad weekly purchase (Pcs)", value=db["Purchased Qty"].min(), delta= string_convert_min_sp[0]) # Afficher le metric de la semaine avec moins d'achats
+            st.metric(label="Bad weekly purchase (Pcs)", value=db["Purchased_Qty"].min(), delta= string_convert_min_sp[0]) # Afficher le metric de la semaine avec moins d'achats
             
         #----------------------------
 
-        fig_week_sp = px.line(filter_weeks_sp, x="Weeks", y="Purchased Qty", title=f"Weekly {annee_sp} purchase", text="Purchased Qty")
+        fig_week_sp = px.line(filter_weeks_sp, x="Weeks", y="Purchased_Qty", title=f"Weekly {annee_sp} purchase", text="Purchased_Qty")
         fig_week_sp.update_traces(textposition = 'top center')
         st.plotly_chart(fig_week_sp)
 
     with col4a :
         weeks_enter_sp = st.number_input("Write the recent year")
-        weeks_y_sp = dataset_SP_st.groupby(["Years", "Weeks"], as_index= False)["Purchased Qty"].sum()
+        weeks_y_sp = dataset_SP_st.groupby(["Years", "Weeks"], as_index= False)["Purchased_Qty"].sum()
         filter_weeks_y_sp = weeks_y_sp[weeks_y_sp["Years"]== weeks_enter_sp]
 
         #----------------------------
-        recupMois_new_years_sp = dataset_SP_st.groupby(["Weeks", "Date", "Years"])["Purchased Qty"].sum().reset_index()
+        recupMois_new_years_sp = dataset_SP_st.groupby(["Weeks", "Date", "Years"])["Purchased_Qty"].sum().reset_index()
         filter_new_years_sp = recupMois_new_years_sp[recupMois_new_years_sp["Years"]== weeks_enter_sp ]
-        db_new = filter_new_years_sp.groupby("Weeks")["Purchased Qty"].sum().reset_index() # Faire un group by sans index
+        db_new = filter_new_years_sp.groupby("Weeks")["Purchased_Qty"].sum().reset_index() # Faire un group by sans index
         
         colxa, colya = st.columns(2)
         with colxa:
-            maximal_new_sp = filter_new_years_sp.loc[filter_new_years_sp["Purchased Qty"].idxmax()]
+            maximal_new_sp = filter_new_years_sp.loc[filter_new_years_sp["Purchased_Qty"].idxmax()]
             string_convert_max_new_sp = str(maximal_new_sp["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_max_new_sp = string_convert_max_new_sp.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Best weekly purchase (Pcs)", value=db_new["Purchased Qty"].max(), delta= string_convert_max_new_sp[0])
+            st.metric(label="Best weekly purchase (Pcs)", value=db_new["Purchased_Qty"].max(), delta= string_convert_max_new_sp[0])
             
 
         with colya:
-            minimal_new_sp = filter_new_years_sp.loc[filter_new_years_sp["Purchased Qty"].idxmin()]
+            minimal_new_sp = filter_new_years_sp.loc[filter_new_years_sp["Purchased_Qty"].idxmin()]
             string_convert_min_new_sp = str(minimal_new_sp["Date"]) # J'ai convertir mon pandas serie en chaine des caracteres
             string_convert_min_new_sp = string_convert_min_new_sp.split() # avec split, je divise ma chaine de caracteres en deux partie en choisisant l'espace vide comme indice de separation
-            st.metric(label="Bad weekly purchase (Pcs)", value=db_new["Purchased Qty"].min(), delta= string_convert_min_new_sp[0]) # Afficher le metric de la semaine avec moins d'achats
+            st.metric(label="Bad weekly purchase (Pcs)", value=db_new["Purchased_Qty"].min(), delta= string_convert_min_new_sp[0]) # Afficher le metric de la semaine avec moins d'achats
             
         #----------------------------
 
-        fig_week_y_sp = px.line(filter_weeks_y_sp, x="Weeks", y="Purchased Qty", title=f"Weekly {weeks_enter_sp} purchase", text="Purchased Qty")
+        fig_week_y_sp = px.line(filter_weeks_y_sp, x="Weeks", y="Purchased_Qty", title=f"Weekly {weeks_enter_sp} purchase", text="Purchased_Qty")
         fig_week_y_sp.update_traces(textposition = 'top center')
         st.plotly_chart(fig_week_y_sp)
 
@@ -1253,30 +1253,30 @@ if file_st_sp is not None:
 
     with col5a:
         #models_year_sp = st.number_input("Put the old year")
-        modeles_sp = dataset_SP_st.groupby(["Years", "Products"], as_index= False)["Purchased Qty"].sum()
+        modeles_sp = dataset_SP_st.groupby(["Years", "Products"], as_index= False)["Purchased_Qty"].sum()
         filter_mdl_sp = modeles_sp[modeles_sp["Years"] == annee_sp]
 
-        fig_mdl_sp = px.bar(filter_mdl_sp, x="Products", y="Purchased Qty", color="Products", text="Purchased Qty", title=f"Models purchased for {annee_sp}")
+        fig_mdl_sp = px.bar(filter_mdl_sp, x="Products", y="Purchased_Qty", color="Products", text="Purchased_Qty", title=f"Models purchased for {annee_sp}")
         fig_mdl_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_mdl_sp)
 
         # Pie Chart
-        fig_mdl_pie_sp = go.Figure(data=[go.Pie(labels= filter_mdl_sp["Products"], values= filter_mdl_sp["Purchased Qty"], title=f"Models proportion for {annee_sp}", opacity= 0.5)])
+        fig_mdl_pie_sp = go.Figure(data=[go.Pie(labels= filter_mdl_sp["Products"], values= filter_mdl_sp["Purchased_Qty"], title=f"Models proportion for {annee_sp}", opacity= 0.5)])
         fig_mdl_pie_sp.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_mdl_pie_sp)
 
 
     with col6a :
         
-        mdl_sp = dataset_SP_st.groupby(["Years", "Products"], as_index= False)["Purchased Qty"].sum()
+        mdl_sp = dataset_SP_st.groupby(["Years", "Products"], as_index= False)["Purchased_Qty"].sum()
         filter_model_sp = mdl_sp[mdl_sp["Years"]== weeks_enter_sp]
 
-        fig_model_sp = px.bar(filter_model_sp, x="Products", y="Purchased Qty", color="Products", text="Purchased Qty", title=f"Models purchased for {weeks_enter_sp}")
+        fig_model_sp = px.bar(filter_model_sp, x="Products", y="Purchased_Qty", color="Products", text="Purchased_Qty", title=f"Models purchased for {weeks_enter_sp}")
         fig_model_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_model_sp)
 
         # Pie Chart
-        fig_model_pie_sp = go.Figure(data=[go.Pie(labels= filter_model_sp["Products"], values= filter_model_sp["Purchased Qty"], title=f"Models proportion for {weeks_enter_sp}", opacity= 0.5)])
+        fig_model_pie_sp = go.Figure(data=[go.Pie(labels= filter_model_sp["Products"], values= filter_model_sp["Purchased_Qty"], title=f"Models proportion for {weeks_enter_sp}", opacity= 0.5)])
         fig_model_pie_sp.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_model_pie_sp)
 
@@ -1289,16 +1289,16 @@ if file_st_sp is not None:
     with col7a:
         # Create Histogram for prices
 
-        date_groupby_sp = date_frame_st_sp.groupby(["Years", "Products", "Prices_usd"], as_index= False)["Purchased Qty"].sum()
+        date_groupby_sp = date_frame_st_sp.groupby(["Years", "Products", "Prices_usd"], as_index= False)["Purchased_Qty"].sum()
         prices_filter_sp = date_groupby_sp[date_groupby_sp["Years"] == weeks_enter_sp]
 
         # Create a histogram
-        fig_hist_sp = px.histogram(prices_filter_sp, x="Prices_usd", title="Distribution models on prices", hover_data=["Purchased Qty"])
+        fig_hist_sp = px.histogram(prices_filter_sp, x="Prices_usd", title="Distribution models on prices", hover_data=["Purchased_Qty"])
         st.plotly_chart(fig_hist_sp)
 
 
     with col8a :
-        key_model_sp = date_frame_st_sp.groupby(["Years", "Products","Prices_usd"], as_index= False)["Purchased Qty"].sum()
+        key_model_sp = date_frame_st_sp.groupby(["Years", "Products","Prices_usd"], as_index= False)["Purchased_Qty"].sum()
         key_filter_sp = key_model_sp[key_model_sp["Years"] == weeks_enter_sp]
 
         fig_key_sp = px.bar(key_filter_sp, x="Products", y="Prices_usd", text="Prices_usd", title="Graphic Models and Prices", color="Products")
@@ -1313,29 +1313,29 @@ if file_st_sp is not None:
     col9a, col0a = st.columns(2)
 
     with col9a :
-        city = dataset_SP_st.groupby(["Years", "City"], as_index= False)["Purchased Qty"].sum()
+        city = dataset_SP_st.groupby(["Years", "City"], as_index= False)["Purchased_Qty"].sum()
         city_years_sp = city[city["Years"] == annee_sp]
-        fig_city_sp = px.bar(city_years_sp, x="City", y="Purchased Qty", text="Purchased Qty", title=f"Situation of Channel Kin and Lushi for {annee_sp}", color="City")
+        fig_city_sp = px.bar(city_years_sp, x="City", y="Purchased_Qty", text="Purchased_Qty", title=f"Situation of Channel Kin and Lushi for {annee_sp}", color="City")
         fig_city_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_city_sp)
 
         st.markdown("___")
         # Pie Chart
-        fig_city_pie_sp = go.Figure(data=[go.Pie(labels= city_years_sp["City"], values= city_years_sp["Purchased Qty"], title=f"Channel proportion for {annee_sp}", opacity= 0.5)])
+        fig_city_pie_sp = go.Figure(data=[go.Pie(labels= city_years_sp["City"], values= city_years_sp["Purchased_Qty"], title=f"Channel proportion for {annee_sp}", opacity= 0.5)])
         fig_city_pie_sp.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_city_pie_sp)
         
 
     with col0a :
-        #channel = date_frame_st.groupby(["Years", "City"], as_index= False)["Purchased Qty"].sum()
+        #channel = date_frame_st.groupby(["Years", "City"], as_index= False)["Purchased_Qty"].sum()
         channel_sp = city[city["Years"] == weeks_enter_sp]
-        fig_channel_sp = px.bar(channel_sp, x="City", y="Purchased Qty", text="Purchased Qty", title=f"Situation of Channel Kin and Lushi for {weeks_enter_sp}", color="City")
+        fig_channel_sp = px.bar(channel_sp, x="City", y="Purchased_Qty", text="Purchased_Qty", title=f"Situation of Channel Kin and Lushi for {weeks_enter_sp}", color="City")
         fig_channel_sp.update_traces(textposition = 'outside')
         st.plotly_chart(fig_channel_sp)
 
         st.markdown("___")
         # Pie Chart
-        fig_channel_pie_sp = go.Figure(data=[go.Pie(labels= channel_sp["City"], values= channel_sp["Purchased Qty"], title=f"Channel proportion for {weeks_enter_sp}", opacity= 0.5)])
+        fig_channel_pie_sp = go.Figure(data=[go.Pie(labels= channel_sp["City"], values= channel_sp["Purchased_Qty"], title=f"Channel proportion for {weeks_enter_sp}", opacity= 0.5)])
         fig_channel_pie_sp.update_traces (hoverinfo='label+percent', textfont_size=15,textinfo= 'label+percent', pull= [0.05, 0, 0, 0, 0],marker_line=dict(color='#FFFFFF', width=2))
         st.plotly_chart(fig_channel_pie_sp)
 
@@ -1356,8 +1356,8 @@ if file_st_sp is not None:
     st.success(f"{len(dataset_SP_st)} lignes de données chargées avec succès ✅")
 
     # Regrouper les ventes par mois
-    prediction_global_sp = dataset_SP_st.groupby("Months")["Purchased Qty"].sum().reset_index()
-    prediction_global_sp = prediction_global_sp.rename(columns={"Months":"ds", "Purchased Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+    prediction_global_sp = dataset_SP_st.groupby("Months")["Purchased_Qty"].sum().reset_index()
+    prediction_global_sp = prediction_global_sp.rename(columns={"Months":"ds", "Purchased_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased_Qty" en "y". Car Prophet ne reconnait que ces noms
 
     # Modèle Prophet
     purchases_global_sp = Prophet()
@@ -1401,15 +1401,15 @@ if file_st_sp is not None:
     st.header("2. 📈 Forecasts by City")
 
     # Vérifier les colonnes requises
-    required_colums = {"City", "Months", "Purchased Qty"}
+    required_colums = {"City", "Months", "Purchased_Qty"}
     if not required_colums.issubset(dataset_SP_st.columns):
         st.error(f"The files must contain the columns : {', '.join(required_colums)}")
         st.stop()
 
     # Préparer les données
 
-    sp_city = dataset_SP_st.groupby(["City", "Months"], as_index= False)["Purchased Qty"].sum()
-    sp_city = sp_city.rename(columns={"Months":"ds", "Purchased Qty":"y"})
+    sp_city = dataset_SP_st.groupby(["City", "Months"], as_index= False)["Purchased_Qty"].sum()
+    sp_city = sp_city.rename(columns={"Months":"ds", "Purchased_Qty":"y"})
     sp_city["ds"] = pd.to_datetime(sp_city["ds"])
 
     ville_cities = sorted(dataset_SP_st["City"].unique())
@@ -1499,8 +1499,8 @@ if file_st_sp is not None:
 
     # Filtrage des donnees en fonction de la selection
     st_series_choose_all_sp = dataset_SP_st[dataset_SP_st["SERIES"].isin(select_series_all_sp)]
-    st_series_all_sp = st_series_choose_all_sp.groupby("Months")["Purchased Qty"].sum().reset_index()
-    st_series_all_sp = st_series_all_sp.rename(columns={"Months": "ds", "Purchased Qty": "y"})
+    st_series_all_sp = st_series_choose_all_sp.groupby("Months")["Purchased_Qty"].sum().reset_index()
+    st_series_all_sp = st_series_all_sp.rename(columns={"Months": "ds", "Purchased_Qty": "y"})
 
     series_forecast_all_sp = Prophet()
     series_forecast_all_sp.fit(st_series_all_sp)
@@ -1794,7 +1794,7 @@ if file_sd_sp is not None:
 
     # Regrouper les ventes par mois
     prediction_sd_sp = dataset_sd_sp.groupby("Date")["Purchases_Qty"].sum().reset_index()
-    prediction_sd_sp = prediction_sd_sp.rename(columns={"Date":"ds", "Purchases_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased Qty" en "y". Car Prophet ne reconnait que ces noms
+    prediction_sd_sp = prediction_sd_sp.rename(columns={"Date":"ds", "Purchases_Qty":"y"})  # On renome la colonne "Months" en "ds" et celui de "Purchased_Qty" en "y". Car Prophet ne reconnait que ces noms
 
     # Modèle Prophet
     purchases_sd_sp = Prophet()

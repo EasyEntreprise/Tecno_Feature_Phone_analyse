@@ -10,6 +10,7 @@ from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
 import os
 import time
+from datetime import datetime
 
 
 st.markdown("<h1 style='text-align: center; color: blue;'> TECNO FP SUB-DEALERS DASHBOARD </h1>", unsafe_allow_html= True)
@@ -354,7 +355,9 @@ if file is not None:
     ########
     st.subheader("Target & Achievment", divider="grey")
 
-    view_2025 = dataset_full[dataset_full["Years"] == 2025]
+    annee_cour = datetime.now().year
+
+    view_2025 = dataset_full[dataset_full["Years"] == annee_cour]
     target_2025 = view_2025.groupby("Date", as_index= False)["Purchases_Qty"].sum()
 
     def creer_target_si_un_mois(target_2025):
